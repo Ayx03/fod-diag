@@ -89,7 +89,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1513</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1516</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -104,8 +104,9 @@
     网页登录一次就能确认：<b>账号密码对不对</b>、<b>会不会跳 300 错误页</b>。<br>
     <span style="color:#8b95a1;font-size:11.5px">
       手机上能登录，但一点播放会被<b>强制跳到 App</b> —— 这是网页识别到手机访问，不是账号问题。<br>
-      浏览器菜单里打开「<b>桌面版网站 / PC 版网站</b>」，就<b>可以在网页里直接看</b>；
-      电脑端浏览器不用设置也能直接观看。
+      <span id="deskmode">浏览器菜单里打开「<b>桌面版网站 / PC 版网站</b>」，就<b>可以在网页里直接看</b>；
+      电脑端浏览器不用设置也能直接观看。</span><span id="iosmode" style="display:none">iOS 上开「<b>桌面版网站</b>」基本没用，
+      还是会跳到 App / App Store —— 只能用 FOD App 播放。</span>
     </span>
   </div>
   <div class="row2">
@@ -813,6 +814,11 @@ function checkDev(){
   if(IS_MAC && !IS_SAFARI){
     dtip.style.display="block";
     dtip.innerHTML="💡 macOS 上只有 <b>Safari</b> 走 FairPlay；Chrome / Firefox 只能用 Widevine（桌面端通常为软件级）。<br>想在 Mac 上拿高画质，请用 Safari 打开本页重测。";
+  }
+
+  if(IS_IOS){
+    const dm=$("deskmode"), im=$("iosmode");
+    if(dm&&im){ dm.style.display="none"; im.style.display="inline"; }
   }
 
   const tip=$("mobiletip");
