@@ -392,6 +392,9 @@ function checkDev(){
       t += "<br>💡 当前不是官方 Chrome（"+esc((UA.match(/(SamsungBrowser|Firefox|OPR|EdgA)\/[\d\.]+/)||["第三方浏览器"])[0])+
            "），DRM 结论可能偏低，建议用 Chrome 复测。";
     }
+    if(!wv.yes){
+      t += "<br>💡 FOD App 需<b>日本区 Google 账号</b>才能从 Play 下载（提示「所在国家/地区不可用」就是区服问题）；也可以直接用网页端订阅。";
+    }
     t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
     t += '<br><a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">↓ 下载检测 App（APK，约 26 KB）</a>';
     t += '<br><span style="color:#6f7883;font-size:11px">仅联网一项普通权限（安装即授予，无任何弹窗），不申请定位 / 存储 / 通讯录 / 电话；检测结果只在本机显示，不上传、不回传。</span>';
