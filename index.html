@@ -52,6 +52,7 @@
      border-radius:12px;padding:11px 10px;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4}
   .p span{display:block;font-size:11px;color:#8b95a1;font-weight:400;margin-top:2px}
   .hint{font-size:10.5px;color:#6f7883;font-weight:400;line-height:1.35;margin-top:2px}
+  html{scroll-behavior:smooth}
   details{border-top:1px solid rgba(255,255,255,.06);padding:9px 0}
   details:first-of-type{border-top:0}
   summary{font-size:13.5px;font-weight:600;cursor:pointer;list-style:none;outline:none}
@@ -83,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1332</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1339</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -243,7 +244,7 @@
   安装包约 26 KB：只用「联网」这一项普通权限（安装即授予，不会有授权弹窗），不申请定位、存储、通讯录、电话等任何隐私权限；检测结果只在本机显示，不上传任何服务器。
 </div>
 
-<div class="card" style="margin-top:18px">
+<div class="card" id="shop" style="margin-top:18px;scroll-margin-top:16px">
   <h2>需要开通 / 续费 FOD 会员？</h2>
   <div style="font-size:13.5px;color:#c8ced6;margin-bottom:12px;line-height:1.6">
     FOD プレミアム 代充 · <b>带广告会员</b> / <b>免广告会员</b><br>下单前可先把上面的检测结果发我，先确认你的环境
@@ -376,6 +377,13 @@ function verdict(color,title,desc){
   const _d=$("verdict").querySelector(".d");
   if(_d) _d.innerHTML=_d.innerHTML.replace(/下载下方\s*App|下方\s*App/g,
       '<a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">下载 App</a>');
+  // 全部正常 = 环境没问题，这时候才是转化点
+  if(color === "#2ecc71"){
+    $("verdict").insertAdjacentHTML("beforeend",
+      '<div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);font-size:13px">'+
+      '<a href="#shop" style="color:var(--blue);font-weight:700;text-decoration:underline">'+
+      '🎫 需要代开通会员点这里 →</a></div>');
+  }
 }
 
 async function withTimeout(p,ms){
