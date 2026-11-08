@@ -144,6 +144,7 @@ const R={net:null,geo:null,hosts:{}};
 /* 套壳浏览器（WebView）识别：UA 可以伪造，但这些对象伪造不了 */
 function webviewCheck(){
   if(!IS_ANDROID) return {yes:false,why:""};
+  if(/Firefox|FxiOS/.test(UA)) return {yes:false,why:""};   // 火狐是正经浏览器，不是套壳
   let score=0; const why=[];
   const uad=navigator.userAgentData;
   if(!uad){
@@ -361,6 +362,9 @@ function checkDev(){
            "。Via、夸克这类把 UA 写成 Chrome，但 DRM 往往只报 L3，数值不可信。";
     } else if(IS_CHROME){
       t += "<br>💡 当前是官方 Chrome，DRM 判定最准（Edge 常把 L1 报成 L3）。";
+    } else {
+      t += "<br>💡 当前不是官方 Chrome（"+esc((UA.match(/(SamsungBrowser|Firefox|OPR|EdgA)\/[\d\.]+/)||["第三方浏览器"])[0])+
+           "），DRM 结论可能偏低，建议用 Chrome 复测。";
     }
     t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
     if(!IS_CHROME || wv.yes){
