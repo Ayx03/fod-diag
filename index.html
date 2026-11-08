@@ -52,6 +52,15 @@
      border-radius:12px;padding:11px 10px;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4}
   .p span{display:block;font-size:11px;color:#8b95a1;font-weight:400;margin-top:2px}
   .hint{font-size:10.5px;color:#6f7883;font-weight:400;line-height:1.35;margin-top:2px}
+  details{border-top:1px solid rgba(255,255,255,.06);padding:9px 0}
+  details:first-of-type{border-top:0}
+  summary{font-size:13.5px;font-weight:600;cursor:pointer;list-style:none;outline:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ ";color:#6f7883;font-weight:400}
+  details[open] summary::before{content:"▾ "}
+  .faqbody{font-size:12.5px;color:#b9c4d0;line-height:1.75;padding:8px 0 2px 14px}
+  .faqbody b{color:#e8eaed}
+  .faqbody .kbd{background:#232830;border:1px solid #333a44;border-radius:5px;padding:1px 5px;font-size:12px;color:#e8eaed}
   .apkwrap{position:relative}
   .qrbox{display:none;position:absolute;right:10px;top:100%;margin-top:8px;z-index:20;
          background:#fff;border-radius:12px;padding:8px;box-shadow:0 10px 28px #000a;text-align:center}
@@ -69,7 +78,7 @@
 </style>
 </head>
 <body>
-<h1>FOD 播放环境检测</h1>
+<h1>FOD 检测与常见问题</h1>
 <div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1253</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
@@ -77,6 +86,79 @@
 <div id="desktip" class="tip" style="display:none"></div>
 
 <div id="verdict"><div class="t"><span class="dot" style="background:#666"></span>正在检测…</div><div class="d dim">约需 10 秒</div></div>
+
+<div class="card" id="faq">
+  <h2>常见问题速查</h2>
+
+  <details open>
+    <summary style="color:#ff8fa3">⚠️ 别把「登録」当成登录（最常见）</summary>
+    <div class="faqbody">
+      <b>ログイン</b> ＝ 登录<b>已有</b>账号<br>
+      <b>新規登録 / 登録</b> ＝ <b>注册一个全新账号</b><br><br>
+      中文里「登録」看起来像"登录"，但在 FOD 里它是<b>注册入口</b>。
+      如果你或商家已经帮你注册好了账号，清除数据后请点 <b>ログイン</b>。<br>
+      点 <b>登録</b> 会走一遍全新注册流程，<b>等于开了一个新号</b>，
+      原来的会员、看过的记录都不会出现。
+    </div>
+  </details>
+
+  <details>
+    <summary>跳到「エラー」页 / 提示不在日本国内</summary>
+    <div class="faqbody">
+      这是地区判定没过（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br>
+      ① 确认代理已开启并选中<b>日本</b>节点 → ② 重新跑一次上面的检测，确认「地区判定」是
+      <b>日本 · 可正常使用</b> → ③ 清除本站缓存后重开 App。
+    </div>
+  </details>
+
+  <details>
+    <summary>清除数据在哪？清完要重新登录吗</summary>
+    <div class="faqbody">
+      安卓：设置 → 应用 → 管理应用 → 搜「FOD」→ 存储 → <b>清除数据</b><br>
+      苹果：设置 → 通用 → iPhone 储存空间 → FOD → <b>删除 App</b>（或卸载后重装）<br><br>
+      清完需要重新登录，这时点 <b>ログイン</b>，<b>不要点登録</b>。
+    </div>
+  </details>
+
+  <details>
+    <summary>在微信里打开，检测结果是「中国」</summary>
+    <div class="faqbody">
+      微信内置浏览器经常绕开代理（不走你的节点），所以 IP 显示中国是正常的。<br>
+      点右上角「···」→「在浏览器打开」后重新检测。
+    </div>
+  </details>
+
+  <details>
+    <summary>安卓浏览器一打开就跳到 FOD App</summary>
+    <div class="faqbody">
+      浏览器菜单里开启「<b>桌面版网站</b>」后<b>部分机型</b>可以网页播放；不行就直接用 App。
+    </div>
+  </details>
+
+  <details>
+    <summary>iPhone / iPad 装不上或打不开</summary>
+    <div class="faqbody">
+      FOD App 要求 <b>iOS 15.0+</b>（iPhone 6 最高 iOS 12，无法使用）。<br>
+      App 只在<b>日本区 App Store</b> 上架，中国区账号搜不到，需要日区 Apple ID。
+    </div>
+  </details>
+
+  <details>
+    <summary>安卓在 Google Play 下不了 / 提示所在地区不可用</summary>
+    <div class="faqbody">
+      FOD App 只在<b>日本区 Google Play</b> 上架，需要日区 Google 账号；更新也一样。
+    </div>
+  </details>
+
+  <details>
+    <summary>能播，但画质差 / 黑屏 / 卡顿</summary>
+    <div class="faqbody">
+      FOD 最高只到 1080p（多数片源 720p），没有 4K。<br>
+      黑屏或只有标清多见于<b>外接显示器</b>的 HDCP 限制，<b>用设备内屏</b>一般正常。<br>
+      安卓若 Widevine 只有 L3（多为套壳浏览器），请用官方 Chrome 或直接用 App。
+    </div>
+  </details>
+</div>
 
 <div class="card"><h2>出口 IP（多源）</h2><div id="net"><div class="row"><span class="k">获取中</span><span class="v"><span class="spin"></span></span></div></div></div>
 <div class="card"><h2>FOD 地区判定</h2><div id="geo"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
