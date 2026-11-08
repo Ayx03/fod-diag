@@ -89,7 +89,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1509</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1513</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -364,6 +364,24 @@
   </details>
 
   <details>
+    <summary>检测都正常，但 App 里播放还是报错</summary>
+    <div class="faqbody">
+      本页测的是<b>域名和地区</b>，App 播放还多依赖两个东西：<br>
+      <b>① DRM 授权服务器</b>（<span class="kbd">cenc.webstream.ne.jp</span>）——
+      它不通就一定会播放失败，和地区、会员都无关；<br>
+      <b>② App 自己的接口</b>（作品详情、推荐）。<br><br>
+      上面「FOD 域名连通性」里现在包含这两项，<b>看它们是不是「不通」</b>。<br><br>
+      如果是通的还报错，按顺序试：<br>
+      · 确认 App <b>真的走了代理</b>（有的系统有「分应用代理」，App 可能被排除在外）；<br>
+      · 换一个节点重试（节点对单个域名握手不稳很常见）；<br>
+      · 杀掉 App 重开，别在报错后立刻反复点；<br>
+      · 「通信に失敗しました」这类提示多是<b>接口偶发失败</b>，隔几分钟重试往往就好。<br><br>
+      <span style="color:#8b95a1;font-size:11.5px">注意：本页在浏览器里测，App 走的是系统代理，
+      两者可能不一致 —— 浏览器通、App 不通，多半是分应用代理或 DNS 的问题。</span>
+    </div>
+  </details>
+
+  <details>
     <summary>截图 / 录屏出来是黑屏</summary>
     <div class="faqbody">
       这是 <b>DRM 版权保护</b>，<b>正常现象</b>，不是设备坏了、也不是没装好。<br><br>
@@ -458,7 +476,9 @@ const HOSTS=[
  ["fod.fujitv.co.jp","主页 / 主要接口"],
  ["i.fod.fujitv.co.jp","图片 CDN"],
  ["waiting.id.fod.fujitv.co.jp","排队 / 鉴权"],
- ["geo.fod.j-stream.jp","地区判定"]
+ ["geo.fod.j-stream.jp","地区判定"],
+ ["cenc.webstream.ne.jp","DRM 授权（播放必需）"],
+ ["api.recommend.fod.fujitv.co.jp","作品 / 推荐接口"]
 ];
 /* 多源：任一可用即可，避免单接口 429 */
 const IPAPIS=[
