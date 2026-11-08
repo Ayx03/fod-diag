@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1953</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1957</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -634,6 +634,7 @@ function chromeIntent(){
 function verdict(color,title,desc){
   R.verdict={title:title,desc:desc};
   $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
+  document.dispatchEvent(new Event("diag:done"));
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
   const _d=$("verdict").querySelector(".d");
@@ -1170,15 +1171,25 @@ run();
 // ?member / ?buy / ?shop → 直接滚到代充会员卡片并高亮一下
 const qp=new URLSearchParams(location.search);
 if(qp.has("member")||qp.has("buy")||qp.has("shop")){
-  const go=()=>{
+  let tries=0, done=false;
+  const go=(smooth)=>{
     const s=document.getElementById("shop");
-    if(!s)return;
-    s.scrollIntoView({behavior:"smooth",block:"start"});
-    s.animate([{boxShadow:"0 0 0 4px rgba(255,209,102,.9)"},{boxShadow:"0 0 0 4px rgba(255,209,102,0)"}],
-               {duration:2200,easing:"ease-out"});
+    if(!s)return false;
+    const r=s.getBoundingClientRect();
+    if(r.top>=-40 && r.top<=innerHeight*0.55){ // 已定位
+      if(!done){done=true;
+        s.animate([{boxShadow:"0 0 0 4px rgba(255,209,102,.9)"},{boxShadow:"0 0 0 4px rgba(255,209,102,0)"}],
+                   {duration:2200,easing:"ease-out"});}
+      return true;
+    }
+    window.scrollTo({top:s.offsetTop-16,behavior:smooth?"smooth":"auto"});
+    return false;
   };
-  if(document.readyState==="complete") setTimeout(go,80);
-  else addEventListener("load",()=>setTimeout(go,80));
+  const t=setInterval(()=>{
+    tries++;
+    if(go(tries<4)||tries>40) clearInterval(t);
+  },400);
+  document.addEventListener("diag:done",()=>{tries=0;}); // 检测完成后重新校准（布局会变高）
 }
 </script>
 </body>
