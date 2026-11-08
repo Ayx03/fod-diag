@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1533</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1534</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -1033,6 +1033,7 @@ const DEVKEY = (PLATFORM==="iOS"||PLATFORM==="iPadOS") ? "ios"
              : PLATFORM==="Windows" ? "win"
              : PLATFORM==="macOS"   ? "mac" : "all";
 const DEVNAME = {ios:"iPhone / iPad", android:"安卓", win:"Windows", mac:"macOS", all:"全部设备"};
+let faqSel = "auto";   // 当前选中的按钮：auto / all / android / ios / win / mac
 
 function faqApply(dev){
   const box=$("faq");
@@ -1049,8 +1050,7 @@ function faqApply(dev){
   });
   shown.forEach(d=>box.appendChild(d));
   document.querySelectorAll("#faqdev .dbtn").forEach(b=>{
-    const v=b.getAttribute("data-devsel");
-    b.classList.toggle("on", v===dev || (v==="auto" && dev===DEVKEY));
+    b.classList.toggle("on", b.getAttribute("data-devsel")===faqSel);
   });
   const eff = dev==="all" ? "全部设备" : DEVNAME[dev]||dev;
   const n = shown.filter(d=>tk(d).includes(dev) && dev!=="all").length;
@@ -1063,6 +1063,7 @@ document.addEventListener("click", e=>{
   const b = e.target.closest && e.target.closest("#faqdev .dbtn");
   if(!b) return;
   const v = b.getAttribute("data-devsel");
+  faqSel = v;
   faqApply(v==="auto" ? DEVKEY : v);
 });
 
