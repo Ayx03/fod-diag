@@ -66,6 +66,9 @@
   details[open] summary::before{content:"▾ "}
   .faqbody{font-size:12.5px;color:#b9c4d0;line-height:1.75;padding:8px 0 2px 14px}
   .faqbody b{color:#e8eaed}
+  .dbtn{font-size:11.5px;padding:5px 11px;border-radius:999px;border:1px solid #333a44;
+        background:#232830;color:#b9c4d0;font-family:inherit}
+  .dbtn.on{background:#2b6cff;border-color:#2b6cff;color:#fff;font-weight:600}
   .copybtn{display:inline-block;margin:8px 0 4px;padding:7px 14px;border-radius:9px;border:1px solid #3a4553;
            background:#232830;color:#e8eaed;font-size:12.5px;font-family:inherit}
   .copybtn:active{background:#2c323c}
@@ -89,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1530</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1533</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -149,8 +152,17 @@
 
 <div class="card" id="faq">
   <h2>常见问题速查</h2>
+  <div id="faqdev" style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px">
+    <button class="dbtn on" data-devsel="auto">当前设备</button>
+    <button class="dbtn" data-devsel="all">全部</button>
+    <button class="dbtn" data-devsel="android">安卓</button>
+    <button class="dbtn" data-devsel="ios">iPhone / iPad</button>
+    <button class="dbtn" data-devsel="win">Windows</button>
+    <button class="dbtn" data-devsel="mac">macOS</button>
+  </div>
+  <div id="faqnote" style="font-size:11.5px;color:#6f7883;margin:-4px 0 8px"></div>
 
-  <details open>
+  <details open data-dev="all">
     <summary style="color:#ff8fa3">⚠️ 别把「登録」当成登录（最常见）</summary>
     <div class="faqbody">
       <b>ログイン</b> ＝ 登录<b>已有</b>账号<br>
@@ -162,7 +174,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>提示「メールアドレスはすでに登録されています」（邮箱已注册）</summary>
     <div class="faqbody">
       在<b>注册页</b>填好邮箱、点「<b>認証コードを送信</b>」时，顶部会弹出：<br>
@@ -176,7 +188,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>提示「有効な認証コードではありません」（验证码无效）</summary>
     <div class="faqbody">
       意思是：<b>验证码不对</b>，让重新输入<b>4 位半角数字</b>。<br><br>
@@ -190,7 +202,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>验证码是对的，却一直提示无效</summary>
     <div class="faqbody">
       验证码是<b>跟"这一次登录流程"绑定的</b>，同一时间一个账号只认<b>一份</b>状态。所以：<br>
@@ -206,7 +218,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>QQ / 126 邮箱收不到验证码或重置邮件</summary>
     <div class="faqbody">
       常见现象：<b>明明没注册过，却提示「已注册」</b>；或者点「パスワードをお忘れの方」后
@@ -222,23 +234,24 @@
     </div>
   </details>
 
-  <details>
-    <summary>显示「再開手続きへ」，点进去却是重新开通？</summary>
+  <details data-dev="all">
+    <summary>「解約手続きへ」和「再開手続きへ」有什么区别</summary>
     <div class="faqbody">
-      看到这个说明<b>解约已经完成了</b>，不需要你再操作。<br><br>
-      正常状态长这样：<br>
-      · <b>解約手続き済み</b> ＝ 已解约<br>
-      · <b>利用期限：◯年◯月◯日 23:59まで</b> ＝ 会员可以用到这天，到期自动结束<br>
-      · <b>再開手続きへ</b> ＝ 「<b>重新开通</b>」的按钮，<b>不是</b>查看解约<br><br>
-      ⚠️ <b>「再開手続きへ」不要点</b>。点进去会走<b>重新订阅</b>流程，走完最后一步就是重新开通、重新扣款。<br>
-      不小心点进去了也没关系：<b>只要没点到最后的确认按钮（最終確認 / 申し込む），退出就不会产生任何费用</b>。<br><br>
+      这两个是<b>不同状态</b>下才出现的按钮，看当前显示哪个，就知道自己走到哪一步了：<br><br>
+      <b>① 显示「解約手続きへ」</b> ＝ <b>还在订阅中，还没解约</b>。<br>
+      点它才是解约入口。<br><br>
+      <b>② 显示「解約手続き済み」+「再開手続きへ」</b> ＝ <b>已经解约完成</b>。<br>
+      这里的「再開手続きへ」字面意思就是<b>重新开通会员</b>，属于正常功能，不是查看解约。
+      不想续费就<b>别点</b>；点了并走完最后一步就会重新订阅、重新扣款。<br>
+      不小心点进去了也没关系：<b>只要没点到最后的确认按钮（最終確認 / 申し込む），退出不会产生任何费用</b>。<br><br>
+      另外，<b>解约 ≠ 立刻失效</b>：只要还在「<b>利用期限：◯年◯月◯日 23:59まで</b>」之内，会员照常能用。<br><br>
       关于扣钱：我们代开的账号由我们自己付款并已解约，<b>你这边没有绑定任何支付方式</b>，
       不会扣你的钱；付款是微信 / 支付宝转账或平台下单一次付清，<b>没有开通自动续费、免密支付</b>，
       会员到期自动失效，不会续订。
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>「解約」之后还能用吗？是不是立刻失效</summary>
     <div class="faqbody">
       <b>解約 ＝ 取消自动续费</b>，不是立刻停会员。<br>
@@ -256,7 +269,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>弹出「この作品はFODプレミアム各コースでご視聴いただけます」</summary>
     <div class="faqbody">
       这是<b>付费墙</b>，意思是：这个作品（或这一集）需要 <b>FOD プレミアム</b> 会员才能看。<br><br>
@@ -271,7 +284,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>跳到「エラー」页 / 提示不在日本国内</summary>
     <div class="faqbody">
       这是地区判定没过（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br>
@@ -280,7 +293,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="android ios">
     <summary>清除数据在哪？清完要重新登录吗</summary>
     <div class="faqbody">
       安卓：设置 → 应用 → 管理应用 → 搜「FOD」→ 存储 → <b>清除数据</b><br>
@@ -289,7 +302,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>App 里怎么退出账号（换号必看）</summary>
     <div class="faqbody">
       点 App 右下角「<b>マイページ</b>」，<b>默认就停在最上面</b>，「<b>会員情報</b>」在首屏就能看到，它下面依次是：<br>
@@ -307,7 +320,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>搜不到「杀旅」——中文搜不到，要用日文原名</summary>
     <div class="faqbody">
       FOD 的搜索框只认<b>日文原名</b>，用中文「杀旅」是搜不出来的。<br>
@@ -318,7 +331,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="android ios">
     <summary>在微信里打开，检测结果是「中国」</summary>
     <div class="faqbody">
       微信内置浏览器经常绕开代理（不走你的节点），所以 IP 显示中国是正常的。<br>
@@ -326,7 +339,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="android">
     <summary>安卓浏览器一打开就跳到 FOD App</summary>
     <div class="faqbody">
       浏览器菜单里开启「<b>桌面版网站 / PC 版网站</b>」，一般就能在网页里直接播放；
@@ -334,7 +347,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="ios">
     <summary>iPhone / iPad 装不上或打不开</summary>
     <div class="faqbody">
       FOD App 要求 <b>iOS 15.0+</b>（iPhone 6 最高 iOS 12，无法使用）。<br>
@@ -342,14 +355,14 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="android">
     <summary>安卓在 Google Play 下不了 / 提示所在地区不可用</summary>
     <div class="faqbody">
       FOD App 只在<b>日本区 Google Play</b> 上架，需要日区 Google 账号；更新也一样。
     </div>
   </details>
 
-  <details>
+  <details data-dev="android">
     <summary>华为 / 荣耀（国内版）/ 华为智选 手机看不了</summary>
     <div class="faqbody">
       这类设备没有 <b>Google 服务框架（GMS）</b>，系统里缺少 <b>Widevine</b> 版权模块。<br><br>
@@ -365,7 +378,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="android">
     <summary>手机支持 GMS，但没登录 Google 账号，会影响吗</summary>
     <div class="faqbody">
       <b>不影响 Widevine 本身。</b>Widevine 是系统里的版权模块，
@@ -379,7 +392,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>检测都正常，但 App 里播放还是报错</summary>
     <div class="faqbody">
       本页测的是<b>域名和地区</b>，App 播放还多依赖两个东西：<br>
@@ -400,7 +413,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>截图 / 录屏出来是黑屏</summary>
     <div class="faqbody">
       这是 <b>DRM 版权保护</b>，<b>正常现象</b>，不是设备坏了、也不是没装好。<br><br>
@@ -412,7 +425,7 @@
     </div>
   </details>
 
-  <details>
+  <details data-dev="all">
     <summary>能播，但画质差 / 黑屏 / 卡顿</summary>
     <div class="faqbody">
       <b>① 先手动调画质</b>（最常见）：播放页点右上角<b>齿轮 ⚙</b> 图标 →「<b>画質</b>」→
@@ -844,6 +857,10 @@ function checkDev(){
     dtip.innerHTML="💡 macOS 上只有 <b>Safari</b> 走 FairPlay；Chrome / Firefox 只能用 Widevine（桌面端通常为软件级）。<br>想在 Mac 上拿高画质，请用 Safari 打开本页重测。";
   }
 
+  const devBtn=document.querySelector('#faqdev .dbtn[data-devsel="auto"]');
+  if(devBtn) devBtn.textContent = "当前设备（"+(DEVNAME[DEVKEY]||"全部")+"）";
+  if(typeof faqApply==="function") faqApply(DEVKEY);
+
   if(IS_IOS){
     const dm=$("deskmode"), im=$("iosmode");
     if(dm&&im){ dm.style.display="none"; im.style.display="inline"; }
@@ -1009,6 +1026,45 @@ $("copyFull").onclick=()=>{ $("modal").style.display="flex"; };
 $("modalCancel").onclick=()=>{ $("modal").style.display="none"; };
 $("modalOk").onclick=()=>{ $("modal").style.display="none"; copyText(buildReport(), "已复制完整版"); };
 $("modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("modal").style.display="none"; });
+
+// ---------- FAQ 按设备排序 / 筛选 ----------
+const DEVKEY = (PLATFORM==="iOS"||PLATFORM==="iPadOS") ? "ios"
+             : PLATFORM==="Android" ? "android"
+             : PLATFORM==="Windows" ? "win"
+             : PLATFORM==="macOS"   ? "mac" : "all";
+const DEVNAME = {ios:"iPhone / iPad", android:"安卓", win:"Windows", mac:"macOS", all:"全部设备"};
+
+function faqApply(dev){
+  const box=$("faq");
+  const items=[...box.querySelectorAll("details")];
+  items.forEach((d,i)=>{ if(d.dataset.idx===undefined) d.dataset.idx=i; });
+  const tk = d => (d.dataset.dev||"all").split(/\s+/);
+  const visible = d => dev==="all" ? true : (tk(d).includes("all") || tk(d).includes(dev));
+  items.forEach(d=>{ d.style.display = visible(d) ? "" : "none"; });
+  const shown = items.filter(visible);
+  shown.sort((a,b)=>{
+    const ma = tk(a).includes(dev)?0:1, mb = tk(b).includes(dev)?0:1;
+    if(ma!==mb) return ma-mb;
+    return (+a.dataset.idx) - (+b.dataset.idx);
+  });
+  shown.forEach(d=>box.appendChild(d));
+  document.querySelectorAll("#faqdev .dbtn").forEach(b=>{
+    const v=b.getAttribute("data-devsel");
+    b.classList.toggle("on", v===dev || (v==="auto" && dev===DEVKEY));
+  });
+  const eff = dev==="all" ? "全部设备" : DEVNAME[dev]||dev;
+  const n = shown.filter(d=>tk(d).includes(dev) && dev!=="all").length;
+  $("faqnote").textContent = dev==="all"
+    ? "显示全部问题"
+    : "按「"+eff+"」显示"+(n?("，其中 "+n+" 条是该设备专属"):"")+"；切换上方按钮可看其他设备";
+}
+
+document.addEventListener("click", e=>{
+  const b = e.target.closest && e.target.closest("#faqdev .dbtn");
+  if(!b) return;
+  const v = b.getAttribute("data-devsel");
+  faqApply(v==="auto" ? DEVKEY : v);
+});
 
 // 通用页内跳转（如 PlayReady 行里的“看上面的说明”）
 document.addEventListener("click", e => {
