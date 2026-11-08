@@ -65,6 +65,7 @@
 <div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS</div>
 
 <div id="mobiletip" class="tip" style="display:none"></div>
+<div id="desktip" class="tip" style="display:none"></div>
 
 <div id="verdict"><div class="t"><span class="dot" style="background:#666"></span>正在检测…</div><div class="d dim">约需 10 秒</div></div>
 
@@ -132,6 +133,7 @@ const IS_IOS=/iPad|iPhone|iPod/.test(UA)||(navigator.platform==="MacIntel"&&navi
 const IS_ANDROID=/Android/.test(UA);
 const IS_MAC=/Macintosh|Mac OS X/.test(UA)&&!IS_IOS;
 const IS_WIN=/Windows/.test(UA);
+const IS_EDGE=/Edg\//.test(UA);
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
 
@@ -308,6 +310,16 @@ function checkDev(){
     row("浏览器",esc((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知"])[0]))+
     row("时区",esc(Intl.DateTimeFormat().resolvedOptions().timeZone||"-"));
 
+  const dtip=$("desktip");
+  if(IS_WIN && !IS_EDGE){
+    dtip.style.display="block";
+    dtip.innerHTML="💡 检测到你在 Windows 上使用 <b>"+esc((UA.match(/(Chrome|Firefox|Edg|OPR)\/[\d\.]+/)||["非 Edge 浏览器"])[0])+
+      "</b>。<br>Windows 上除 Edge 外的浏览器只能用 <b>Widevine 软件级（≈L3）</b>，画质会被压缩。"+
+      "FOD 片源同时提供 <b>PlayReady</b>，而 Windows 上只有 Edge 支持它 —— 换 Edge 播放有可能拿到更高画质"+
+      "（前提：显示链路支持 HDCP）。<br>"+
+      '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" style="color:var(--blue)">前往下载 Edge →</a>';
+  }
+
   const tip=$("mobiletip");
   if(IS_ANDROID){
     tip.style.display="block";
@@ -343,7 +355,8 @@ function decide(){
   }
   if(IS_WIN)
     return (DRM.widevine||DRM.playready)
-      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n外接显示器黑屏多半是 HDCP 不达标。"]
+      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n外接显示器黑屏多半是 HDCP 不达标。"+
+           (IS_EDGE?"":"\n当前不是 Edge：只能走 Widevine 软件级，换 Edge 可能解锁更高画质。")]
       : ["#e74c3c","浏览器不支持受保护播放","请改用 Chrome / Edge，并确认 Widevine 组件正常。"];
   if(IS_MAC)
     return DRM.fairplay
