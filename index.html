@@ -152,7 +152,8 @@ const IPAPIS=[
  {n:"ipwho.is", u:"https://ipwho.is/"},
  {n:"ipapi.co",  u:"https://ipapi.co/json/"},
  {n:"ipinfo.io", u:"https://ipinfo.io/json"},
- {n:"ip.sb",     u:"https://api.ip.sb/geoip"}
+ {n:"ip.sb",     u:"https://api.ip.sb/geoip"},
+ {n:"ipwhois.app", u:"https://ipwhois.app/json/"}
 ];
 const DRM={widevine:null,fairplay:null,playready:null,hdcp:null};
 
@@ -382,6 +383,16 @@ async function checkDrm(){
         DRM.hdcp=st;
         out.push(drmRow("HDCP 2.2",'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>',
           "外接显示器 / 采集卡时关键<br>不达标会黑屏或降画质"));
+        if(st!=="usable"){
+          const exp={
+            "output-restricted":"当前显示链路<b>不支持 HDCP 2.2</b>：播放受保护内容时，可能黑屏、报错或降到标清。",
+            "output-downscaled":"受保护内容会被<b>降画质</b>播放（通常是分辨率被压到 480p/540p）。",
+            "output-blocked":"受保护内容<b>无法播放</b>，会被直接拦下。",
+            "usable-in-future":"当前可用，但链路状态可能随时变化。"
+          }[st] || ("状态为 "+st+"，播放受保护内容可能受限。");
+          out.push('<div style="font-size:11.5px;color:#f1c40f;margin-top:6px;line-height:1.6">'+
+            exp+'<br><span style="color:#8b95a1">用<b>笔记本内屏</b>观看一般不受影响；只有接外接显示器 / 扩展坞 / 采集卡时才会触发。直连 HDMI、换线或换接口通常能改善。</span></div>');
+        }
       }
     }catch(e){}
   }
