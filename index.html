@@ -89,7 +89,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1516</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1524</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -257,6 +257,21 @@
   </details>
 
   <details>
+    <summary>弹出「この作品はFODプレミアム各コースでご視聴いただけます」</summary>
+    <div class="faqbody">
+      这是<b>付费墙</b>，意思是：这个作品（或这一集）需要 <b>FOD プレミアム</b> 会员才能看。<br><br>
+      ✅ <b>不是网络问题，也不是登录失败</b> —— 能看到这个提示，
+      恰恰说明<b>账号登录正常、网络和地区判定也正常</b>。<br><br>
+      · 免费集（通常是<b>第 1 集</b>）不需要会员，可以直接播放；<br>
+      · 第 2 集起、或者整部作品，多数需要会员；<br>
+      · 开通会员后重新进这一页，提示会消失，直接能播。<br><br>
+      ⚠️ 下面那个「<b>FODプレミアム登録に進む</b>」是<b>去开通 / 绑卡</b>的入口。
+      如果你是<b>通过我们代开的会员</b>，<b>不要点它</b>，直接联系客服处理，
+      避免重复扣费或多开一个号。
+    </div>
+  </details>
+
+  <details>
     <summary>跳到「エラー」页 / 提示不在日本国内</summary>
     <div class="faqbody">
       这是地区判定没过（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br>
@@ -372,6 +387,9 @@
       它不通就一定会播放失败，和地区、会员都无关；<br>
       <b>② App 自己的接口</b>（作品详情、推荐）。<br><br>
       上面「FOD 域名连通性」里现在包含这两项，<b>看它们是不是「不通」</b>。<br><br>
+      💡 <b>怎么判断 IP 有没有被 FOD 封</b>：被封的表现是<b>连 FOD 网页都打不开</b> ——
+      本页会出现<b>域名成片不通</b>。所以本页全部「通」= <b>IP 没被封</b>，
+      剩下的大多是偶发失败或 App 没走代理。<br><br>
       如果是通的还报错，按顺序试：<br>
       · 确认 App <b>真的走了代理</b>（有的系统有「分应用代理」，App 可能被排除在外）；<br>
       · 换一个节点重试（节点对单个域名握手不稳很常见）；<br>
