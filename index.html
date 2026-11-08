@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-2025</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-2041</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -635,7 +635,6 @@ function chromeIntent(){
 function verdict(color,title,desc){
   R.verdict={title:title,desc:desc};
   $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
-  document.dispatchEvent(new Event("diag:done"));
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
   const _d=$("verdict").querySelector(".d");
@@ -648,6 +647,7 @@ function verdict(color,title,desc){
       '<a href="#shop" style="color:var(--blue);font-weight:700;text-decoration:underline">'+
       '🎫 需要代开通会员点这里 →</a></div>');
   }
+  document.dispatchEvent(new Event("diag:done"));
 }
 
 async function withTimeout(p,ms){
