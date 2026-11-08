@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1407</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1424</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -115,6 +115,33 @@
       （常见提示是「このメールアドレスは既に登録されています」一类，意思是该邮箱已被使用）。<br><br>
       不要再反复试 —— 回到登录页点 <b>ログイン</b>，用同一个邮箱登录即可。<br>
       忘记密码就在登录页点「<b>パスワードをお忘れの方</b>」重置，不要重新注册。
+    </div>
+  </details>
+
+  <details>
+    <summary>提示「有効な認証コードではありません」（验证码无效）</summary>
+    <div class="faqbody">
+      意思是：<b>验证码不对</b>，让重新输入<b>4 位半角数字</b>。<br><br>
+      按顺序检查：<br>
+      <b>① 用的是不是最新那封邮件</b> —— 邮箱里常有好几封验证码，旧的就失效了，只认<b>最后收到</b>的那封；<br>
+      <b>② 有没有输成全角数字</b> —— 中文输入法打出来的「１２３４」不认，必须切成<b>半角</b>的 1234；<br>
+      <b>③ 复制时带了空格</b> —— 手动输入更稳；<br>
+      <b>④ 已经过期</b> —— 验证码有时效，超时就要点下面的
+      「<b>認証コードを再送信</b>」重新发一封，再用最新那封。<br><br>
+      重发后如果一直收不到，看下一条「QQ / 126 邮箱收不到验证码」。
+    </div>
+  </details>
+
+  <details>
+    <summary>验证码是对的，却一直提示无效</summary>
+    <div class="faqbody">
+      验证码是<b>跟你的设备和这一次登录流程绑定</b>的，不是一串"万能数字"。所以：<br>
+      · <b>转发给别人</b>、或者用<b>别人发来的码</b> → 一定失败；<br>
+      · 中途退出页面、重新输入邮箱、点了「再送信」→ 之前的码<b>作废</b>，只认最新那封；<br>
+      · 换浏览器 / 换设备 / 清过缓存 → 之前那次流程的码也会失效。<br><br>
+      <b>正确做法</b>：在<b>同一台手机、同一次流程</b>里 —— 输邮箱 → 收码 → 立刻输入。<br><br>
+      ⚠️ 连续输错会触发<b>账号临时锁定</b>。已经试了好几次还是不行，先停手，
+      等一会儿再从头走一遍，或者把这条发给客服。
     </div>
   </details>
 
