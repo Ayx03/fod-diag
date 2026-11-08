@@ -240,6 +240,7 @@ async function checkNet(){
     const cls=r.cc==="JP"?"ok":(r.cc==="CN"||r.cc==="HK")?"bad":"";
     return row(r.src,'<span class="'+cls+'">'+esc(r.ip)+" "+esc(r.country||r.cc)+" "+esc(r.city||"")+"</span>");
   }).join("");
+  if(good.length<rs.length) html+=row("提示",'<span class="dim">个别来源失败不影响判断（多源取一即可）</span>');
   html+=ccs.length>1
     ? row("汇总",'<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>')
     : row("汇总",'<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length+" 源一致 · "+esc(ccs[0]||"?")+'</span>');
@@ -349,7 +350,8 @@ async function checkDrm(){
 
   $("drm").innerHTML=out.join("")+
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
-    '以上是浏览器声明的能力（EME），不代表服务端最终授权。'+
+    '以上是浏览器声明的能力（EME），不代表服务端最终授权。<br>'+
+    '<b style="color:#8b95a1">个别项不支持或检测不到属正常，只要能正常播放就无需处理。</b>'+
     (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 <a href="'+APK_URL+'" download style="color:var(--blue)">App</a> 检测。':'')+'</div>';
 }
 
