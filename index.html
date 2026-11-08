@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1544</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1547</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -323,6 +323,24 @@
       要点页面上的「<b>TOP</b>」或直接输 <span class="kbd">fod.fujitv.co.jp</span>。<br><br>
       <span style="color:#8b95a1;font-size:11.5px">清 Cookie 的作用：让 FOD 重新判断你的地区。
       如果之前用别的网络（比如直连）打开过、被记成海外，不清就一直跳 300。</span>
+    </div>
+  </details>
+
+  <details data-dev="all">
+    <summary>为什么有的 IP 源失败，或者显示的是国内地址</summary>
+    <div class="faqbody">
+      <b>① 显示「未取到 / 超时」</b><br>
+      这些 IP 查询接口有频率限制，偶尔失败很正常。页面同时查 5 个来源，
+      <b>只要有一个拿到结果就够用</b>，不影响判断。<br><br>
+      <b>② 显示的是国内地址 / 和别的源不一致</b><br>
+      这也是<b>正常</b>的。代理的分流规则通常让<b>国内应用走直连</b>
+      （避免国内 App 被风控、或者访问变慢），而 IP 查询接口很多是国内服务，
+      于是它们看到的就是你<b>本机的国内出口</b>，而不是节点的日本出口。<br><br>
+      <b>怎么判断到底行不行：</b>只看这两项 ——<br>
+      · 「<b>FOD 地区判定</b>」是不是 <b>日本 · 可正常使用</b><br>
+      · 「<b>FOD 域名连通性</b>」是不是全通<br><br>
+      两项都正常、FOD 能登录能看，就<b>不用管</b>那些显示国内地址的来源。
+      反过来，如果地区判定不是日本，才需要调整节点或分流规则。
     </div>
   </details>
 
@@ -687,7 +705,16 @@ async function checkNet(){
     const cls=r.cc==="JP"?"ok":(r.cc==="CN"||r.cc==="HK")?"bad":"";
     return row(r.src,'<span class="'+cls+'">'+esc(r.ip)+" "+esc(r.country||r.cc)+" "+esc(r.city||"")+"</span>");
   }).join("");
-  if(good.length<rs.length) html+=row("提示",'<span class="dim">个别来源失败不影响判断（多源取一即可）</span>');
+  // 失败的源也列出来，别让客户以为被藏了
+  rs.filter(r=>!r.ip).forEach(r=>{
+    html+=row(r.src,'<span class="dim">未取到 · '+esc(r.err||"失败")+'</span>');
+  });
+  // 非日本 / 多源不一致时给出解释（分流规则导致的国内出口是正常现象）
+  if(ccs.length>1 || (ccs[0] && ccs[0]!=="JP")){
+    html+=row("说明",'<span class="dim" style="line-height:1.6">部分来源显示国内 / 非日本地址属<b>正常</b>：'+
+      '分流规则下国内 IP 接口走的是直连，返回的是你本机出口。<br>'+
+      '判断只看「FOD 地区判定」和域名连通 —— FOD 能正常登录、能看就不用管。</span>');
+  }
   html+=ccs.length>1
     ? row("汇总",'<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>')
     : row("汇总",'<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length+" 源一致 · "+esc(ccs[0]||"?")+'</span>');
