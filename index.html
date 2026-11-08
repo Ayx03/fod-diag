@@ -72,6 +72,7 @@
 <h1>FOD 播放环境检测</h1>
 <div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS</div>
 
+<div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
 <div id="desktip" class="tip" style="display:none"></div>
 
@@ -187,6 +188,7 @@ const IS_EDGE_FAMILY=/Edg\/|EdgA\/|EdgiOS\//.test(UA);
 const IS_SAFARI=/Safari\//.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(UA);
 const IS_IOS_SAFARI=IS_IOS && IS_SAFARI;
 const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
+const IS_WECHAT=/MicroMessenger|WeChat\/|wxwork/i.test(UA);
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
 
@@ -409,6 +411,16 @@ async function checkDrm(){
 }
 
 function checkDev(){
+  if(IS_WECHAT){
+    const wb=$("wxbanner");
+    wb.style.display="block";
+    let h="⚠️ 你正在<b>微信内置浏览器</b>中打开本页。<br>"+
+          "微信的流量经常被代理规则绕过（不经过你的节点），这里测出来的结果可能不准。<br>"+
+          "请点右上角「···」→「在浏览器打开」后重新检测。";
+    const ci=chromeIntent();
+    if(ci) h+='<br><a href="'+ci+'" style="color:#ffd166;font-weight:600">用 Chrome 打开本页 →</a>';
+    wb.innerHTML=h;
+  }
   $("dev").innerHTML=
     row("平台",esc(PLATFORM))+
     row("浏览器",esc((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知"])[0]))+
