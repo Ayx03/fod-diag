@@ -52,6 +52,12 @@
      border-radius:12px;padding:11px 10px;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4}
   .p span{display:block;font-size:11px;color:#8b95a1;font-weight:400;margin-top:2px}
   .hint{font-size:10.5px;color:#6f7883;font-weight:400;line-height:1.35;margin-top:2px}
+  .apkwrap{position:relative}
+  .qrbox{display:none;position:absolute;right:10px;top:100%;margin-top:8px;z-index:20;
+         background:#fff;border-radius:12px;padding:8px;box-shadow:0 10px 28px #000a;text-align:center}
+  .apkwrap:hover .qrbox{display:block}
+  .qrbox img{width:150px;height:150px;display:block}
+  .qrtip{font-size:10.5px;color:#333;margin-top:4px}
 </style>
 </head>
 <body>
@@ -70,7 +76,13 @@
 
 <button id="again">重新检测</button>
 <button id="copy" style="margin-top:8px">复制结果文字</button>
-<a id="apk" class="shop w1" style="display:none;margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（可查 L1/L3、GMS、内购）</a>
+<div class="apkwrap">
+  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（可查 L1/L3、GMS、内购）</a>
+  <div class="qrbox">
+    <img alt="扫码下载" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAAEYAQMAAAC9QHvPAAAABlBMVEUNDxL///9hB4TGAAABKklEQVR42u2ay44DMQgEW/v//0yUGBqYjBRptadseS62xSUtKB6O4vMSNthg82sbnRXne969Tnkb8aPP61ttZB2fihyB9i36pL9EyLvjS7lHnxFdJQz63PhPwigCfW74Ez6lRPBH7/nLH/krf79zvczpVRoQXyomq7zJCEKfjKYMqeL1YBP6nOgqmcLhdTb/nj8by4NF+E/mrxKmS8V2H/RZoDakoxIZ+V0dZPMCfQZtotFzGZHA51bHjVi3X+jj9kLVfMU4w2fTp/1nVkbwZ7TwplE4zRNfbimctaZ6+M+e53eskd8v8x9pTJ7JX9rvF/2CYVbjP6vUCRdBUg2F0GfGU/tU4Rp95vtOzPEq7xf7pVTFHjWL0Mf5azVkoj+91D/8fwMbbP7W5gFjKtouo0JujQAAAABJRU5ErkJggg==">
+    <div class="qrtip">扫一扫，传到手机安装</div>
+  </div>
+</div>
 
 <div class="card" style="margin-top:18px">
   <h2>需要开通 / 续费 FOD 会员？</h2>
@@ -295,15 +307,14 @@ function checkDev(){
     row("平台",esc(PLATFORM))+
     row("浏览器",esc((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知"])[0]))+
     row("时区",esc(Intl.DateTimeFormat().resolvedOptions().timeZone||"-"));
-  if(IS_ANDROID) $("apk").style.display="block";
 
   const tip=$("mobiletip");
   if(IS_ANDROID){
     tip.style.display="block";
-    tip.innerHTML="⚠️ 安卓浏览器打开 FOD 网页会被<b>强制跳转 App</b>，开「桌面版网站」多数情况也无效。<br>本页只用于诊断，实际播放请用 FOD App。";
+    tip.innerHTML="⚠️ 安卓浏览器打开 FOD 网页<b>可能</b>被强制跳转 App。<br>可尝试在浏览器菜单里开启「桌面版网站」，<b>部分机型可行</b>；若仍跳转，请直接用 FOD App 播放。";
   } else if(IS_IOS){
     tip.style.display="block";
-    tip.innerHTML="⚠️ iPhone / iPad 浏览器打开 FOD 网页会被<b>强制跳转 App 或 App Store</b>，开「桌面版网站」也基本无用。<br>本页只用于诊断，实际播放请用 FOD App。";
+    tip.innerHTML="⚠️ iPhone / iPad 的浏览器会被<b>强制跳转 App 或 App Store</b>，「桌面版网站」基本无效。<br>iOS 端只能用 FOD App 播放，本页仅用于诊断环境。";
   }
 }
 
@@ -321,7 +332,7 @@ function decide(){
     return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
 
   if(IS_ANDROID)
-    return ["#4a9eff","网络与地区都正常","安卓浏览器无法网页播放（会被强制跳转 App），本页只做诊断。\nL1/L3、GMS、内购这些网页查不到，请下载下方 App 检测。"];
+    return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\nL1/L3、GMS、内购这类信息网页查不到，请下载下方 App。"];
   if(IS_IOS){
     const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
     if(iosv&&+iosv<15)
