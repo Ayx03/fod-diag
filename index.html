@@ -388,7 +388,8 @@ async function checkDrm(){
   box.insertAdjacentHTML("beforeend",
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
     '以上是浏览器声明的能力（EME），不代表服务端最终授权。<br>'+
-    '<b style="color:#8b95a1">个别项不支持或检测不到属正常，只要能正常播放就无需处理。</b>'+
+    '<b style="color:#8b95a1">个别项不支持或检测不到属正常，只要能正常播放就无需处理。</b><br>'+
+    '<span style="color:#6f7883">浏览器报出的等级可能低于设备实际能力（例如 Edge / Via 会把 L1 显示成 L3）。</span>'+
     (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 <a href="'+APK_URL+'" download style="color:var(--blue)">App</a> 检测。':'')+'</div>');
 }
 
@@ -422,7 +423,7 @@ function checkDev(){
     const wv=webviewCheck();
     if(wv.yes){
       t += "<br>🚫 检测到你在用<b>套壳浏览器（WebView）</b>："+esc(wv.why)+
-           "。Via、夸克这类把 UA 写成 Chrome，但 DRM 往往只报 L3，数值不可信。";
+           "。Via、夸克这类把 UA 写成 Chrome，但 DRM 等级往往<b>报得偏低</b>（把 L1 报成 L3），设备本身可能支持 L1。";
     } else if(IS_CHROME){
       t += "<br>💡 当前是官方 Chrome，DRM 判定最准（Edge 常把 L1 报成 L3）。";
     } else {
@@ -432,7 +433,7 @@ function checkDev(){
     if(!wv.yes){
       t += "<br>💡 FOD App 需<b>日本区 Google 账号</b>才能从 Play 下载（提示「所在国家/地区不可用」就是区服问题）；也可以直接用网页端订阅。";
     }
-    t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
+    t += '<br><span style="color:#8b95a1;font-size:11.5px">套壳浏览器常把 L1 报成 L3，判断等级请以官方 Chrome 或 App 的结果为准。</span>';
     t += '<br><a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">↓ 下载检测 App（APK，约 26 KB）</a>';
     t += '<br><span style="color:#6f7883;font-size:11px">仅联网一项普通权限（安装即授予，无任何弹窗），不申请定位 / 存储 / 通讯录 / 电话；检测结果只在本机显示，不上传、不回传。</span>';
     if(!IS_CHROME || wv.yes){
@@ -448,7 +449,7 @@ function checkDev(){
     let t2="⚠️ iPhone / iPad 的浏览器会被<b>强制跳转 App 或 App Store</b>，「桌面版网站」基本无效。<br>iOS 端只能用 FOD App 播放，本页仅用于诊断环境。";
     t2 += IS_IOS_SAFARI
       ? "<br>💡 当前是 <b>Safari</b>，FairPlay 结论可信。"
-      : "<br>💡 iOS 上第三方浏览器都是 WKWebView 套壳，DRM 暴露可能不全，建议用 <b>Safari</b> 打开本页复测。";
+      : "<br>💡 iOS 上第三方浏览器都是 WKWebView 套壳，DRM 等级容易报得偏低，建议用 <b>Safari</b> 打开本页复测。";
     t2 += "<br>💡 FOD App 只在<b>日本区 App Store</b> 上架，中国区账号搜不到 —— 装不上多半是 Apple ID 区服问题，不是设备问题。";
     tip.innerHTML=t2;
   }
@@ -469,7 +470,7 @@ function decide(){
 
   if(IS_ANDROID)
     return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
-      (webviewCheck().yes?"⚠️ 套壳浏览器，DRM 数值不可信，请用官方 Chrome 或 App 复测。\n"
+      (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
         :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
         :"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
       "GMS、内购这些网页查不到，请下载下方 App。"];
