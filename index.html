@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1350</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1357</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -228,6 +228,18 @@
   </details>
 
   <details>
+    <summary>华为 / 荣耀（国内版）/ 华为智选 手机看不了</summary>
+    <div class="faqbody">
+      这类设备没有 <b>Google 服务框架（GMS）</b>，系统里缺少 <b>Widevine</b> 版权模块。<br><br>
+      ⚠️ <b>装 Chrome 也解决不了</b> —— 安卓上的 Chrome <b>不自己带</b> Widevine，
+      它调用的是<b>系统</b>里的版权模块；系统没有，换任何浏览器都一样。<br><br>
+      表现：本页 Widevine 显示 <b>「不支持」</b>；App 里播放直接报错或黑屏。<br><br>
+      <b>只能换设备</b>：其他品牌的安卓手机（小米 / OPPO / vivo / 三星等）、iPhone / iPad，
+      或者在<b>电脑</b>上用 Chrome / Edge 观看（Windows 系统自带 Widevine）。
+    </div>
+  </details>
+
+  <details>
     <summary>截图 / 录屏出来是黑屏</summary>
     <div class="faqbody">
       这是 <b>DRM 版权保护</b>，<b>正常现象</b>，不是设备坏了、也不是没装好。<br><br>
@@ -366,6 +378,7 @@ const IS_IOS_SAFARI=IS_IOS && IS_SAFARI;
 const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
 const IS_WECHAT_RAW=/MicroMessenger|WeChat\/|wxwork|MMWEBSDK|MMWEBID|XWEB\//i.test(UA);
 const IS_WECHAT=IS_WECHAT_RAW || /[?&]wx=1/.test(location.search);  // ?wx=1 可预览微信提示
+const FORCE_NODRM=/[?&]nodrm=1/.test(location.search);  // ?nodrm=1 预览“无 Widevine”的设备
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
 
@@ -556,7 +569,13 @@ async function checkDrm(){
   const SHOW_FP=!KNOWN||IS_IOS||IS_MAC;  // 只有 Apple 设备可能支持 FairPlay
   const SHOW_PR=!KNOWN||IS_WIN;          // 只有 Windows 可能支持 PlayReady
 
-  if(SHOW_WV){
+  if(SHOW_WV && FORCE_NODRM){
+    DRM.widevine=null;
+    out.push(drmRow("Widevine",'<span class="bad">不支持</span>',
+      "Chrome / Edge / Firefox<br>Windows、macOS、安卓"));
+    out.push('<div style="font-size:11px;color:#6f7883;margin-top:6px">（预览模式 ?nodrm=1：模拟没有 Widevine 的设备，如华为 / 荣耀）</div>');
+  }
+  if(SHOW_WV && !FORCE_NODRM){
     let wv=await eme("com.widevine.alpha","HW_SECURE_ALL");
     let v;
     if(wv.ok){ DRM.widevine="HW"; v='<span class="ok">硬件级（≈L1）</span>'; }
@@ -708,12 +727,18 @@ function decide(){
   if(R.net.cc!=="JP")
     return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
 
-  if(IS_ANDROID)
+  if(IS_ANDROID){
+    if(DRM.widevine===null)
+      return ["#e74c3c","这台设备不支持 Widevine，看不了 FOD",
+        "常见于华为 / 荣耀（国内版）/ 华为智选（Hi nova 等）—— 系统里没有 Google 服务框架（GMS），\n"+
+        "也就没有 Widevine 版权模块，任何浏览器、任何 App 都播不了受保护视频。\n"+
+        "只能换设备：其他品牌安卓机、iPhone / iPad，或在电脑（Windows 的 Chrome、Edge）上观看。"];
     return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
       (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
         :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
         :"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
       "GMS、内购这些网页查不到，请下载下方 App。"];
+  }
   if(IS_IOS){
     const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
     if(iosv&&+iosv<15)
