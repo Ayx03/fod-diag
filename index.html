@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1538</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1543</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -285,11 +285,17 @@
   </details>
 
   <details data-dev="all">
-    <summary>跳到「エラー」页 / 提示不在日本国内</summary>
+    <summary>跳到「エラー」页 / 提示不在日本国内（err=300）</summary>
     <div class="faqbody">
-      这是地区判定没过（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br>
-      ① 确认代理已开启并选中<b>日本</b>节点 → ② 重新跑一次上面的检测，确认「地区判定」是
-      <b>日本 · 可正常使用</b> → ③ 清除本站缓存后重开 App。
+      这是<b>地区判定没过</b>（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br><br>
+      <b>处理顺序：</b><br>
+      ① 确认代理已开启、选中<b>日本</b>节点；<br>
+      ② 重新跑一次上面的检测，确认「地区判定」是 <b>日本 · 可正常使用</b>；<br>
+      ③ <b>清除 FOD 网站的数据</b>（电脑版 Edge 的操作见下面那条）；<br>
+      ④ <b>手动回到首页</b> —— ⚠️ <b>300 页面清完数据再刷新不会自动跳回首页</b>，
+      要手动访问 <span class="kbd">fod.fujitv.co.jp</span> 或点页面上的「<b>TOP</b>」按钮。<br><br>
+      💡 <b>建议 300 一出现就先清一次数据</b>：否则它可能把"在日本以外访问过"的状态写进 Cookie，
+      之后即使节点切好了，也还是一直往 300 跳。
     </div>
   </details>
 
@@ -299,6 +305,21 @@
       安卓：设置 → 应用 → 管理应用 → 搜「FOD」→ 存储 → <b>清除数据</b><br>
       苹果：设置 → 通用 → iPhone 储存空间 → FOD → <b>删除 App</b>（或卸载后重装）<br><br>
       清完需要重新登录，这时点 <b>ログイン</b>，<b>不要点登録</b>。
+    </div>
+  </details>
+
+  <details data-dev="win">
+    <summary>电脑版 Edge 怎么清除 FOD 网站数据</summary>
+    <div class="faqbody">
+      ① 打开 FOD 页面（<span class="kbd">fod.fujitv.co.jp</span>），点地址栏<b>最左边的锁图标</b> 🔒<br>
+      ② 在弹出的面板里点「<b>站点设置</b>」<br>
+      ③ 点右上方的「<b>删除数据</b>」<br>
+      ④ 再点一次「<b>删除数据</b>」确认<br><br>
+      完成后<b>手动访问首页</b>刷新即可。
+      ⚠️ 如果停在 300 错误页，清完数据<b>不会自动跳回首页</b>，
+      要点页面上的「<b>TOP</b>」或直接输 <span class="kbd">fod.fujitv.co.jp</span>。<br><br>
+      <span style="color:#8b95a1;font-size:11.5px">清 Cookie 的作用：让 FOD 重新判断你的地区。
+      如果之前用别的网络（比如直连）打开过、被记成海外，不清就一直跳 300。</span>
     </div>
   </details>
 
