@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1339</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1341</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -770,6 +770,16 @@ $("copyFull").onclick=()=>{ $("modal").style.display="flex"; };
 $("modalCancel").onclick=()=>{ $("modal").style.display="none"; };
 $("modalOk").onclick=()=>{ $("modal").style.display="none"; copyText(buildReport(), "已复制完整版"); };
 $("modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("modal").style.display="none"; });
+
+// 页内跳转到商城（环境正常时的引流链接）
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest('a[href="#shop"]');
+  if (!a) return;
+  const el = document.getElementById("shop");
+  if (!el) return;
+  e.preventDefault();
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
 // FAQ 里的一键复制（日文名等）
 document.addEventListener("click", e => {
