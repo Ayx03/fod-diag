@@ -126,6 +126,7 @@ const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS"
 const R={net:null,geo:null,hosts:{}};
 
 function verdict(color,title,desc){
+  R.verdict={title:title,desc:desc};
   $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
@@ -354,25 +355,44 @@ async function run(){
 $("again").onclick=run;
 $("copy").onclick=async()=>{
   const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
-  const dp=[];
-  if(!IS_IOS) dp.push("Widevine: "+(DRM.widevine||"不支持"));
-  if(!KNOWN||IS_IOS||IS_MAC) dp.push("FairPlay: "+(DRM.fairplay?"支持":"否"));
-  if(!KNOWN||IS_WIN) dp.push("PlayReady: "+(DRM.playready?"支持":"否"));
-  if(DRM.hdcp) dp.push("HDCP2.2: "+DRM.hdcp);
-  const lines=[
-    "FOD 检测 "+new Date().toLocaleString(),
-    "平台: "+PLATFORM,
-    "出口: "+(R.net&&R.net.ok?R.net.ip+" "+R.net.country+" "+R.net.city:"失败"),
-    "地区判定: "+(R.geo?(R.geo.ok?(R.geo.result?"日本 OK":"非日本"):"连不上"):"-"),
-    "域名: "+Object.entries(R.hosts).map(([h,v])=>h+(v.ok?"通":"不通")).join(" "),
-    "DRM: "+dp.join(" / "),
-    "UA: "+UA
-  ];
+  const WVL={HW:"硬件级 (≈L1)",SW:"软件级 (≈L3)",BASIC:"可用，无等级声明"};
+  const L=[];
+  L.push("FOD 检测 " + new Date().toLocaleString());
+  L.push("平台: " + PLATFORM + " · " + ((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知浏览器"])[0]));
+  if(R.net&&R.net.ok){
+    L.push("出口: " + R.net.ip + " (" + (R.net.country||R.net.cc) + (R.net.city?" / "+R.net.city:"") + ")" + (R.net.isp?" · "+R.net.isp:""));
+  }else{
+    L.push("出口: 获取失败");
+  }
+  L.push("地区判定: " + (R.geo?(R.geo.ok?(R.geo.result?"日本 · 可正常使用":"非日本 · 会被限制"):"连不上判定服务器"):"未检测"));
+  L.push("域名连通:");
+  ["fod.fujitv.co.jp","i.fod.fujitv.co.jp","waiting.id.fod.fujitv.co.jp","geo.fod.j-stream.jp"].forEach(h=>{
+    const v=R.hosts[h];
+    L.push("  " + h + "  " + (v?(v.ok?"通 "+v.ms+"ms":"不通"):"未检测"));
+  });
+  L.push("DRM:");
+  if(!IS_IOS) L.push("  Widevine: " + (WVL[DRM.widevine]||"不支持"));
+  if(!KNOWN||IS_IOS||IS_MAC) L.push("  FairPlay: " + (DRM.fairplay?"支持":"不支持"));
+  if(!KNOWN||IS_WIN) L.push("  PlayReady: " + (DRM.playready?"支持":"不支持"));
+  if(DRM.hdcp) L.push("  HDCP 2.2: " + DRM.hdcp);
+  if(R.verdict){
+    L.push("结论: " + R.verdict.title);
+    R.verdict.desc.split("\n").forEach(s=>L.push("  " + s));
+  }
+  L.push("UA: " + UA);
+  const text=L.join("\n");
   try{
-    await navigator.clipboard.writeText(lines.join("\n"));
+    await navigator.clipboard.writeText(text);
     $("copy").textContent="已复制";
     setTimeout(()=>$("copy").textContent="复制结果文字",1500);
-  }catch(e){}
+  }catch(e){
+    // 剪贴板 API 失败时退化为 textarea 兜底
+    const ta=document.createElement("textarea");
+    ta.value=text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); $("copy").textContent="已复制"; }catch(_){}
+    document.body.removeChild(ta);
+    setTimeout(()=>$("copy").textContent="复制结果文字",1500);
+  }
 };
 run();
 </script>
