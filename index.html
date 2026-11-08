@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FOD 播放环境检测</title>
+<meta name="description" content="检测 FOD 播放所需的网络地区、域名连通性与 DRM（Widevine / FairPlay / PlayReady）能力">
+<style>
+  :root{--bg:#0d0f12;--card:#1a1d22;--line:#2a2f37;--fg:#e8eaed;--dim:#9aa3ad;
+        --ok:#2ecc71;--warn:#f1c40f;--bad:#e74c3c;--blue:#4a9eff}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
+       padding:16px 14px 40px;max-width:560px;margin:0 auto}
+  h1{font-size:18px;margin:6px 0 2px;font-weight:600}
+  .sub{color:var(--dim);font-size:12px;margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:12px}
+  .card h2{font-size:13px;margin:0 0 10px;color:var(--dim);font-weight:500;letter-spacing:.03em}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:5px 0;font-size:14px}
+  .row+.row{border-top:1px solid rgba(255,255,255,.04)}
+  .k{color:var(--dim);flex:0 0 auto}
+  .v{text-align:right;word-break:break-all;font-variant-numeric:tabular-nums}
+  .ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.dim{color:var(--dim)}
+  #verdict{border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid var(--line);background:var(--card)}
+  #verdict .t{font-size:16px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  #verdict .d{font-size:13.5px;color:#c8ced6;white-space:pre-wrap}
+  .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  button{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);
+         background:#232830;color:var(--fg);font-size:15px;margin-top:4px;font-family:inherit}
+  button:active{background:#2c323c}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid #ffffff40;border-top-color:#fff;
+        border-radius:50%;animation:s .8s linear infinite;vertical-align:-1px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .shop{display:block;text-decoration:none;color:#fff;padding:13px 14px;border-radius:12px;
+        margin-top:8px;font-size:15px;font-weight:600;text-align:center}
+  .w1{background:linear-gradient(135deg,#ff4d6d,#c9184a)}
+  .w2{background:linear-gradient(135deg,#f1c40f,#e67e22)}
+  .w3{background:linear-gradient(135deg,#ff2442,#ff6b81)}
+  .note{font-size:11.5px;color:#6f7883;margin-top:10px;line-height:1.55}
+  .tip{background:#1f2733;border:1px solid #2f3d52;border-radius:12px;padding:11px 13px;
+       font-size:12.5px;color:#b9c4d0;margin-bottom:12px;line-height:1.6}
+</style>
+</head>
+<body>
+<h1>FOD 播放环境检测</h1>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS</div>
+
+<div id="mobiletip" class="tip" style="display:none"></div>
+
+<div id="verdict"><div class="t"><span class="dot" style="background:#666"></span>正在检测…</div><div class="d dim">约需 10 秒</div></div>
+
+<div class="card"><h2>出口 IP（多源）</h2><div id="net"><div class="row"><span class="k">获取中</span><span class="v"><span class="spin"></span></span></div></div></div>
+<div class="card"><h2>FOD 地区判定</h2><div id="geo"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
+<div class="card"><h2>FOD 域名连通性</h2><div id="hosts"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
+<div class="card"><h2>DRM 能力 <span class="dim" style="font-weight:400">（EME 探测）</span></h2><div id="drm"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
+<div class="card"><h2>设备 / 浏览器</h2><div id="dev"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
+
+<button id="again">重新检测</button>
+<button id="copy" style="margin-top:8px">复制结果文字</button>
+<a id="apk" class="shop w1" style="display:none;margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（可查 L1/L3、GMS、内购）</a>
+
+<div class="card" style="margin-top:18px">
+  <h2>需要开通 / 续费 FOD 会员？</h2>
+  <div style="font-size:13.5px;color:#c8ced6;margin-bottom:12px;line-height:1.6">
+    FOD プレミアム 月付 / 套餐代充<br>下单前可先把上面的检测结果发我，先确认你的环境
+  </div>
+  <a class="shop w1" href="https://weidian.com/?userid=1790943727" target="_blank" rel="noopener">微店下单 →</a>
+  <a class="shop w2" href="https://www.goofish.com/search?q=YesimAGamer" target="_blank" rel="noopener">闲鱼搜「YesimAGamer」</a>
+  <a class="shop w3" href="https://www.xiaohongshu.com/user/profile/645cfae9000000000f006a64" target="_blank" rel="noopener">小红书主页（笔记内可直接购买）</a>
+  <div class="note">仅提供会员代充服务，不提供任何破解或绕过手段。</div>
+</div>
+
+<script>
+const GEO="https://geo.fod.j-stream.jp/api/check";
+const HOSTS=[
+ ["fod.fujitv.co.jp","主页 / 主要接口"],
+ ["i.fod.fujitv.co.jp","图片 CDN"],
+ ["waiting.id.fod.fujitv.co.jp","排队 / 鉴权"],
+ ["geo.fod.j-stream.jp","地区判定"]
+];
+/* 多源：任一可用即可，避免单接口 429 */
+const IPAPIS=[
+ {n:"ipwho.is", u:"https://ipwho.is/"},
+ {n:"ipapi.co",  u:"https://ipapi.co/json/"},
+ {n:"ipinfo.io", u:"https://ipinfo.io/json"},
+ {n:"ip.sb",     u:"https://api.ip.sb/geoip"}
+];
+const DRM={widevine:null,fairplay:null,playready:null,hdcp:null};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const row=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
+
+const UA=navigator.userAgent;
+const IS_IOS=/iPad|iPhone|iPod/.test(UA)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const IS_ANDROID=/Android/.test(UA);
+const IS_MAC=/Macintosh|Mac OS X/.test(UA)&&!IS_IOS;
+const IS_WIN=/Windows/.test(UA);
+const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
+  :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
+
+const R={net:null,geo:null,hosts:{}};
+
+function verdict(color,title,desc){
+  $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
+    '</div><div class="d">'+esc(desc)+'</div>';
+  $("verdict").style.borderColor=color+"66";
+}
+
+async function withTimeout(p,ms){
+  const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms);
+  try{ return await p(c.signal); } finally{ clearTimeout(t); }
+}
+async function reachable(url,ms){
+  const t0=performance.now();
+  try{
+    await withTimeout(s=>fetch(url,{mode:"no-cors",cache:"no-store",redirect:"manual",signal:s}),ms||9000);
+    return {ok:true,ms:Math.round(performance.now()-t0)};
+  }catch(e){ return {ok:false,ms:Math.round(performance.now()-t0)}; }
+}
+
+/* ---------- 出口 IP ---------- */
+function pick(o,keys){ for(const k of keys){ const v=o[k]; if(v!==undefined&&v!==null&&v!=="") return String(v);} return ""; }
+async function oneApi(api){
+  try{
+    const r=await withTimeout(s=>fetch(api.u,{cache:"no-store",signal:s}),7000);
+    if(!r.ok) return {src:api.n,err:"HTTP "+r.status};
+    const o=await r.json();
+    const ip=pick(o,["ip","query"]);
+    if(!ip) return {src:api.n,err:"无 IP"};
+    return {src:api.n,ip,
+      cc:pick(o,["country_code","countryCode","country"]).toUpperCase(),
+      country:pick(o,["country_name","country"]),
+      city:pick(o,["city"]),
+      isp:pick(o,["isp","org"])||((o.connection&&o.connection.isp)||"")};
+  }catch(e){ return {src:api.n,err:e.name==="AbortError"?"超时":(e.message||"失败")}; }
+}
+async function checkNet(){
+  const rs=await Promise.all(IPAPIS.map(oneApi));
+  const good=rs.filter(r=>r.ip);
+  if(!good.length){
+    R.net={ok:false};
+    $("net").innerHTML=row("状态",'<span class="bad">全部来源失败</span>')+
+      rs.map(r=>row(r.src,'<span class="dim">'+esc(r.err||"?")+'</span>')).join("");
+    return;
+  }
+  R.net=good[0];
+  const ccs=[...new Set(good.map(r=>r.cc).filter(Boolean))];
+  let html=good.map(r=>{
+    const cls=r.cc==="JP"?"ok":(r.cc==="CN"||r.cc==="HK")?"bad":"";
+    return row(r.src,'<span class="'+cls+'">'+esc(r.ip)+" "+esc(r.country||r.cc)+" "+esc(r.city||"")+"</span>");
+  }).join("");
+  html+=ccs.length>1
+    ? row("汇总",'<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>')
+    : row("汇总",'<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length+" 源一致 · "+esc(ccs[0]||"?")+'</span>');
+  $("net").innerHTML=html;
+}
+
+async function checkGeo(){
+  try{
+    const r=await withTimeout(s=>fetch(GEO+"?t="+Date.now(),{cache:"no-store",signal:s}),8000);
+    const d=await r.json();
+    const v=String(d.result)==="true";
+    R.geo={ok:true,result:v};
+    $("geo").innerHTML=row("FOD 认为你在",
+      '<span class="'+(v?"ok":"bad")+'">'+(v?"日本（可正常使用）":"日本以外（会跳 300 错误页）")+"</span>");
+  }catch(e){
+    R.geo={ok:false};
+    $("geo").innerHTML=row("状态",'<span class="bad">连不上地区判定服务器</span>');
+  }
+}
+
+async function checkHosts(){
+  const out=[];
+  await Promise.all(HOSTS.map(async ([h,label])=>{
+    const r=await reachable("https://"+h+"/?t="+Date.now(),9000);
+    R.hosts[h]={ok:r.ok,ms:r.ms}; out.push([h,label,r]);
+  }));
+  out.sort((a,b)=>a[0].localeCompare(b[0]));
+  $("hosts").innerHTML=out.map(([h,label,r])=>
+    row(h+'<div style="font-size:11px;color:#6f7883">'+esc(label)+'</div>',
+        r.ok?'<span class="ok">通 '+r.ms+'ms</span>':'<span class="bad">不通</span>')).join("");
+}
+
+/* ---------- DRM ---------- */
+function vcfg(robustness){
+  const cap={contentType:'video/mp4;codecs="avc1.42E01E"'};
+  if(robustness) cap.robustness=robustness;
+  return [{initDataTypes:["cenc"],videoCapabilities:[cap]}];
+}
+async function eme(ks,robustness){
+  if(!navigator.requestMediaKeySystemAccess) return {ok:false,why:"无 EME"};
+  try{ await navigator.requestMediaKeySystemAccess(ks,vcfg(robustness)); return {ok:true}; }
+  catch(e){ return {ok:false,why:e.name||"不支持"}; }
+}
+async function emeFairplay(){
+  if(!navigator.requestMediaKeySystemAccess) return {ok:false};
+  const vc='video/mp4;codecs="avc1.42E01E"';
+  const cfgs=[
+    [{initDataTypes:["sinf"],videoCapabilities:[{contentType:vc}]}],
+    [{initDataTypes:["cenc"],videoCapabilities:[{contentType:vc}]}]
+  ];
+  for(const ks of ["com.apple.fps","com.apple.fps.1_0"]){
+    for(const cfg of cfgs){
+      try{ await navigator.requestMediaKeySystemAccess(ks,cfg); return {ok:true,ks}; }catch(e){}
+    }
+  }
+  return {ok:false};
+}
+async function checkDrm(){
+  const out=[];
+  let wv=await eme("com.widevine.alpha","HW_SECURE_ALL");
+  if(wv.ok){ DRM.widevine="HW"; out.push(row("Widevine",'<span class="ok">硬件级（≈L1）</span>')); }
+  else{
+    const sw=await eme("com.widevine.alpha","SW_SECURE_CRYPTO");
+    if(sw.ok){ DRM.widevine="SW"; out.push(row("Widevine",'<span class="warn">软件级（≈L3）</span>')); }
+    else{
+      const b=await eme("com.widevine.alpha",null);
+      DRM.widevine=b.ok?"BASIC":null;
+      out.push(row("Widevine",b.ok?'<span class="warn">可用，无等级声明</span>':'<span class="bad">不支持</span>'));
+    }
+  }
+  const fp=await emeFairplay(); DRM.fairplay=fp.ok;
+  out.push(row("FairPlay",fp.ok?'<span class="ok">支持（Safari / Apple）</span>':'<span class="dim">不支持</span>'));
+  const pr=await eme("com.microsoft.playready",null); DRM.playready=pr.ok;
+  out.push(row("PlayReady",pr.ok?'<span class="ok">支持（Windows / Edge）</span>':'<span class="dim">不支持</span>'));
+  try{
+    const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
+    const mk=await acc.createMediaKeys();
+    if(mk.getStatusForPolicy){
+      const st=await mk.getStatusForPolicy({minHdcpVersion:"2.2"});
+      DRM.hdcp=st;
+      out.push(row("HDCP 2.2",'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>'));
+    } else out.push(row("HDCP 2.2",'<span class="dim">浏览器不提供</span>'));
+  }catch(e){ out.push(row("HDCP 2.2",'<span class="dim">无法检测</span>')); }
+
+  $("drm").innerHTML=out.join("")+
+    '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
+    '以上是浏览器声明的能力（EME），不代表服务端最终授权。'+
+    (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 App 检测。':'')+'</div>';
+}
+
+function checkDev(){
+  $("dev").innerHTML=
+    row("平台",esc(PLATFORM))+
+    row("浏览器",esc((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知"])[0]))+
+    row("时区",esc(Intl.DateTimeFormat().resolvedOptions().timeZone||"-"));
+  if(IS_ANDROID) $("apk").style.display="block";
+
+  const tip=$("mobiletip");
+  if(IS_ANDROID){
+    tip.style.display="block";
+    tip.innerHTML="⚠️ 安卓浏览器打开 FOD 网页会被<b>强制跳转 App</b>，开「桌面版网站」多数情况也无效。<br>本页只用于诊断，实际播放请用 FOD App。";
+  } else if(IS_IOS){
+    tip.style.display="block";
+    tip.innerHTML="⚠️ iPhone / iPad 浏览器打开 FOD 网页会被<b>强制跳转 App 或 App Store</b>，开「桌面版网站」也基本无用。<br>本页只用于诊断，实际播放请用 FOD App。";
+  }
+}
+
+function decide(){
+  const dead=Object.entries(R.hosts).filter(([h,v])=>!v.ok).map(([h])=>h);
+  if(R.geo&&R.geo.ok===false)
+    return ["#e74c3c","连不上 FOD 地区判定服务器","网络能出去，但访问不到 geo.fod.j-stream.jp。\n换一个节点再试。"];
+  if(R.geo&&R.geo.result===false)
+    return ["#f1c40f","当前出口不在日本","FOD 判定你的 IP 不在日本，会跳到 /error?err=300 错误页。\n请切换日本节点后重新检测，并清除本站点 Cookie/缓存。"];
+  if(dead.length&&dead.length<HOSTS.length)
+    return ["#e74c3c","部分 FOD 域名不通","不通："+dead.join("、")+"\n典型的「节点能连、但对目标域名握手被丢」，换节点。"];
+  if(!R.net||!R.net.ok)
+    return ["#f1c40f","拿不到出口 IP","可能代理/网络异常，也可能所有 IP 查询接口都被限流。"];
+  if(R.net.cc!=="JP")
+    return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
+
+  if(IS_ANDROID)
+    return ["#4a9eff","网络与地区都正常","安卓浏览器无法网页播放（会被强制跳转 App），本页只做诊断。\nL1/L3、GMS、内购这些网页查不到，请下载下方 App 检测。"];
+  if(IS_IOS){
+    const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
+    if(iosv&&+iosv<15)
+      return ["#e74c3c","系统版本过低，无法使用 FOD","FOD App 要求 iOS 15.0 及以上，这台设备是 iOS "+iosv+"。\niPhone 6 最高只到 iOS 12，属于彻底不支持，只能换设备。"];
+    return DRM.fairplay
+      ? ["#2ecc71","环境正常（FairPlay 可用）","出口在日本、地区判定通过、Safari 支持 FairPlay。\n但 iOS 浏览器会被强制跳转 App，实际播放请用 FOD App。"]
+      : ["#f1c40f","网络正常，但未声明 FairPlay","请用 Safari 打开，或直接用 FOD App。"];
+  }
+  if(IS_WIN)
+    return (DRM.widevine||DRM.playready)
+      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n外接显示器黑屏多半是 HDCP 不达标。"]
+      : ["#e74c3c","浏览器不支持受保护播放","请改用 Chrome / Edge，并确认 Widevine 组件正常。"];
+  if(IS_MAC)
+    return DRM.fairplay
+      ? ["#2ecc71","环境正常（FairPlay 可用）","Safari 支持 FairPlay，出口为日本。"]
+      : ["#f1c40f","建议使用 Safari","macOS 上 FOD 依赖 FairPlay，Chrome 常无法播放受保护内容。"];
+  return ["#2ecc71","网络与地区检查通过","当前平台判断有限，有问题请截图明细。"];
+}
+
+async function run(){
+  verdict("#666","正在检测…","约需 10 秒");
+  $("net").innerHTML=$("geo").innerHTML=$("hosts").innerHTML=$("drm").innerHTML=
+    '<div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div>';
+  R.hosts={};
+  checkDev();
+  await Promise.all([checkNet(),checkGeo(),checkHosts(),checkDrm()]);
+  const [c,t,d]=decide();
+  verdict(c,t,d);
+}
+
+$("again").onclick=run;
+$("copy").onclick=async()=>{
+  const lines=[
+    "FOD 检测 "+new Date().toLocaleString(),
+    "平台: "+PLATFORM,
+    "出口: "+(R.net&&R.net.ok?R.net.ip+" "+R.net.country+" "+R.net.city:"失败"),
+    "地区判定: "+(R.geo?(R.geo.ok?(R.geo.result?"日本 OK":"非日本"):"连不上"):"-"),
+    "域名: "+Object.entries(R.hosts).map(([h,v])=>h+(v.ok?"通":"不通")).join(" "),
+    "Widevine: "+(DRM.widevine||"不支持")+" / FairPlay: "+(DRM.fairplay?"支持":"否")+
+      " / PlayReady: "+(DRM.playready?"支持":"否"),
+    "HDCP: "+(DRM.hdcp||"未知"),
+    "UA: "+UA
+  ];
+  try{
+    await navigator.clipboard.writeText(lines.join("\n"));
+    $("copy").textContent="已复制";
+    setTimeout(()=>$("copy").textContent="复制结果文字",1500);
+  }catch(e){}
+};
+run();
+</script>
+</body>
+</html>
