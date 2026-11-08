@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1424</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1428</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -135,11 +135,12 @@
   <details>
     <summary>验证码是对的，却一直提示无效</summary>
     <div class="faqbody">
-      验证码是<b>跟你的设备和这一次登录流程绑定</b>的，不是一串"万能数字"。所以：<br>
-      · <b>转发给别人</b>、或者用<b>别人发来的码</b> → 一定失败；<br>
-      · 中途退出页面、重新输入邮箱、点了「再送信」→ 之前的码<b>作废</b>，只认最新那封；<br>
-      · 换浏览器 / 换设备 / 清过缓存 → 之前那次流程的码也会失效。<br><br>
-      <b>正确做法</b>：在<b>同一台手机、同一次流程</b>里 —— 输邮箱 → 收码 → 立刻输入。<br><br>
+      验证码是<b>跟"这一次登录流程"绑定的</b>，同一时间一个账号只认<b>一份</b>状态。所以：<br>
+      · <b>手机上也同时在登录 / 点发码</b> → 会把另一边的状态顶掉，两边的码都失效；<br>
+      · 中途刷新页面、重新输入邮箱、点了「再送信」→ 之前的码<b>作废</b>，只认最新那封；<br>
+      · <b>转发给别人</b>、或者用<b>别人发来的码</b> → 一定失败。<br><br>
+      <b>正确做法</b>：只在一台设备上，从「输邮箱 → 收码 → 输入」<b>一口气走完</b>；
+      另一台设备（比如手机）先完全退出，不要同时操作。<br><br>
       ⚠️ 连续输错会触发<b>账号临时锁定</b>。已经试了好几次还是不行，先停手，
       等一会儿再从头走一遍，或者把这条发给客服。
     </div>
