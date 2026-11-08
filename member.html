@@ -98,7 +98,7 @@
   .step::before{counter-increment:s;content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;
         background:#4a1520;border:1px solid #c9184a;color:#ff8fa3;font-weight:700;font-size:14px;
         display:flex;align-items:center;justify-content:center;margin-top:2px}
-  .step b{display:block}
+  .step > div > b{display:block}   /* 只让步骤标题换行，正文里的 <b> 保持行内 */
   .step span{color:var(--dim);font-size:13px}
   .cta{display:block;text-align:center;background:#c9184a;color:#fff;font-weight:700;font-size:15px;
         padding:13px;border-radius:10px;text-decoration:none;margin:14px 0 4px}
@@ -130,9 +130,8 @@
       <div class="step"><div><b>挑一个平台拍下</b><span>微店 / 闲鱼 / 小红书，选「带广告」或「免广告」</span></div></div>
       <div class="step"><div><b>发我检测结果 + FOD 账号</b><span>
         下单后把检测结果发客服，我确认环境没问题再开通。<br>
-        <b>FOD 账号就是「邮箱 + 密码」</b>，没有用户名 —— 把您注册时用的邮箱发我就行。<br>
-        <span style="color:#8b95a1">自己<b>注册不了</b>（提示邮箱已注册 / 收不到验证码）也没关系，
-        注册这步我们可以代办，往下看「注册 / 收不到验证码」那条。</span>
+        FOD 账号就是<b>「邮箱 + 密码」</b>，没有用户名，把您注册时用的邮箱发我就行。<br>
+        <span style="color:#8b95a1">自己注册不了（提示邮箱已注册 / 收不到验证码）也没关系，注册这步可以代办，详见下方「注册 / 收不到验证码」。</span>
       </span></div></div>
     </div>
     <a class="cta" href="./index.html?member=1">免费检测环境 →</a>
@@ -305,7 +304,7 @@
 
   <a class="cta" href="./index.html">返回检测页 →</a>
 
-  <div class="sub">本页仅做下单引导 · 不收集、不上传您的任何信息 · build 1108-2145</div>
+  <div class="sub">本页仅做下单引导 · 不收集、不上传您的任何信息 · build 1108-2147</div>
 </div>
 </body>
 </html>
