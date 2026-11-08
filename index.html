@@ -61,6 +61,11 @@
   .badge{display:inline-block;font-style:normal;font-size:9px;font-weight:700;line-height:1.5;
          background:#fff;color:#c9184a;border-radius:5px;padding:0 4px;margin-left:3px;vertical-align:2px}
   .choff{opacity:.82}
+  #modal{position:fixed;inset:0;background:#000c;z-index:99;display:none;align-items:center;justify-content:center;padding:20px}
+  #modal .box{background:#1a1d22;border:1px solid #2a2f37;border-radius:14px;padding:18px;max-width:420px;width:100%}
+  #modal .box h3{margin:0 0 10px;font-size:16px}
+  #modal .box p{margin:0 0 14px;font-size:12.5px;color:#b9c4d0;line-height:1.7}
+  #modal .box b{color:#ff8fa3}
 </style>
 </head>
 <body>
@@ -79,7 +84,8 @@
 <div class="card"><h2>设备 / 浏览器</h2><div id="dev"><div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div></div></div>
 
 <button id="again">重新检测</button>
-<button id="copy" style="margin-top:8px">复制结果文字</button>
+<button id="copySafe" style="margin-top:8px">复制结果（和谐版）</button>
+<button id="copyFull" style="margin-top:8px;border-color:#5a2b3a;color:#ff8fa3">复制完整版（仅限微信）</button>
 <div class="apkwrap">
   <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（约 26 KB · 仅联网权限）</a>
   <div class="qrbox">
@@ -117,6 +123,18 @@
   </div>
 
   <div class="note">商品若被平台误判下架，可直接点上方对应平台主页找到我。</div>
+</div>
+
+<div id="modal">
+  <div class="box">
+    <h3>复制完整版？</h3>
+    <p>完整版包含<b>真实 IP、运营商、真实版本号</b>等信息。<br>
+    ⚠️ <b>只能发到微信</b>。<br>
+    发到小红书 / 闲鱼 有被判定违规、限制甚至封号的风险；<br>
+    发到微店客服，敏感内容可能被过滤，客服那边看不到。</p>
+    <button id="modalCancel">取消</button>
+    <button id="modalOk" style="margin-top:8px;background:#4a1520;border-color:#c9184a;color:#fff">我已知晓，复制完整版</button>
+  </div>
 </div>
 
 <script>
@@ -487,7 +505,7 @@ async function run(){
 }
 
 $("again").onclick=run;
-$("copy").onclick=async()=>{
+function buildReport(){
   const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
   const WVL={HW:"硬件级 (≈L1)",SW:"软件级 (≈L3)",BASIC:"可用，无等级声明"};
   const L=[];
@@ -514,20 +532,33 @@ $("copy").onclick=async()=>{
     R.verdict.desc.split("\n").forEach(s=>L.push("  " + s));
   }
   L.push("UA: " + UA);
-  const text=sanitize(L.join("\n"));
+  return L.join("\n");
+}
+
+async function copyText(text, okLabel){
   try{
     await navigator.clipboard.writeText(text);
-    $("copy").textContent="已复制";
-    setTimeout(()=>$("copy").textContent="复制结果文字",1500);
   }catch(e){
-    // 剪贴板 API 失败时退化为 textarea 兜底
     const ta=document.createElement("textarea");
     ta.value=text; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand("copy"); $("copy").textContent="已复制"; }catch(_){}
+    try{ document.execCommand("copy"); }catch(_){}
     document.body.removeChild(ta);
-    setTimeout(()=>$("copy").textContent="复制结果文字",1500);
   }
-};
+  ["copySafe","copyFull"].forEach(id=>{ $(id).dataset.orig=$(id).dataset.orig||$(id).textContent; });
+  const toast=document.createElement("div");
+  toast.textContent=okLabel;
+  toast.style.cssText="position:fixed;left:50%;top:16%;transform:translateX(-50%);background:#232830;"+
+    "color:#e8eaed;padding:10px 16px;border-radius:10px;font-size:13.5px;z-index:100;border:1px solid #2a2f37";
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),1600);
+}
+
+$("copySafe").onclick=()=>copyText(sanitize(buildReport()), "已复制（和谐版）");
+$("copyFull").onclick=()=>{ $("modal").style.display="flex"; };
+$("modalCancel").onclick=()=>{ $("modal").style.display="none"; };
+$("modalOk").onclick=()=>{ $("modal").style.display="none"; copyText(buildReport(), "已复制完整版"); };
+$("modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("modal").style.display="none"; });
+
 run();
 </script>
 </body>
