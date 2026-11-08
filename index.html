@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1402</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1405</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -233,8 +233,12 @@
       这类设备没有 <b>Google 服务框架（GMS）</b>，系统里缺少 <b>Widevine</b> 版权模块。<br><br>
       ⚠️ <b>装 Chrome 也解决不了</b> —— 安卓上的 Chrome <b>不自己带</b> Widevine，
       它调用的是<b>系统</b>里的版权模块；系统没有，换任何浏览器都一样。<br><br>
-      表现：本页 Widevine 显示 <b>「不支持」</b>；App 里播放直接报错或黑屏。<br><br>
-      <b>只能换设备</b>：其他品牌的安卓手机（小米 / OPPO / vivo / 三星等）、iPhone / iPad，
+      <b>先按顺序排除，别急着换设备：</b><br>
+      ① 用<b>官方 Chrome</b> 打开本页复测（Firefox 可能关了 DRM：about:config 里
+      <span class="kbd">media.eme.enabled</span> 设为 true）；<br>
+      ② <b>下载下方 App 试一次</b> —— App 走系统播放器，不受浏览器设置影响；<br>
+      ③ 两个都报错 / 黑屏，才是设备真的没有 Widevine 模块。<br><br>
+      <b>确定是设备问题后</b>：换其他品牌的安卓手机（小米 / OPPO / vivo / 三星等）、iPhone / iPad，
       或者在<b>电脑</b>上用 Chrome / Edge 观看（Windows 系统自带 Widevine）。
     </div>
   </details>
@@ -742,11 +746,16 @@ function decide(){
     return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
 
   if(IS_ANDROID){
-    if(DRM.widevine===null)
-      return ["#e74c3c","这台设备不支持 Widevine，看不了 FOD",
-        "常见于华为 / 荣耀（国内版）/ 华为智选（Hi nova 等）—— 系统里没有 Google 服务框架（GMS），\n"+
-        "也就没有 Widevine 版权模块，任何浏览器、任何 App 都播不了受保护视频。\n"+
-        "只能换设备：其他品牌安卓机、iPhone / iPad，或在电脑（Windows 的 Chrome、Edge）上观看。"];
+    if(DRM.widevine===null){
+      const ff=/Firefox|FxiOS/.test(UA);
+      return ["#f1c40f","浏览器报「不支持 Widevine」，先别急着换设备",
+        (ff?"Firefox 可能关闭了 DRM 播放（about:config 里把 media.eme.enabled 设为 true）。\n":"")+
+        "先按这个顺序试，很多是浏览器的问题，不是设备：\n"+
+        "① 用官方 Chrome 打开本页复测；\n"+
+        "② 下载下方 App 试一次 —— App 走系统播放器，不依赖浏览器设置；\n"+
+        "③ 两个都还是报错 / 黑屏，才是设备真的没有 Widevine 模块\n"+
+        "（华为 / 荣耀国内版 / 华为智选常见），那时候只能换设备，或在电脑上用 Chrome、Edge 看。"];
+    }
     return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
       (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
         :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
