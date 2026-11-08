@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1357</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1402</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -236,6 +236,20 @@
       表现：本页 Widevine 显示 <b>「不支持」</b>；App 里播放直接报错或黑屏。<br><br>
       <b>只能换设备</b>：其他品牌的安卓手机（小米 / OPPO / vivo / 三星等）、iPhone / iPad，
       或者在<b>电脑</b>上用 Chrome / Edge 观看（Windows 系统自带 Widevine）。
+    </div>
+  </details>
+
+  <details>
+    <summary>手机支持 GMS，但没登录 Google 账号，会影响吗</summary>
+    <div class="faqbody">
+      <b>不影响 Widevine 本身。</b>Widevine 是系统里的版权模块，
+      不需要登录 Google 账号、也不需要 Play 商店能用。<br><br>
+      所以本页显示 <b>「Widevine 不支持」</b>，基本就是系统里<b>真的没有这个模块</b>，
+      不是账号没登录、也不是没开 GMS 开关。<br><br>
+      <b>唯一和 Google 相关的情况</b>：Widevine 首次使用需要向 Google 完成一次授权注册
+      （provisioning）。如果代理规则把 Google 域名全绕过了，可能出现"检测得到但播放失败"。<br>
+      这时把 <span class="kbd">play.googleapis.com</span> 放行（能连通就行），再播一次，
+      一般会自动完成注册。
     </div>
   </details>
 
