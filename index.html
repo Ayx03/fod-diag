@@ -374,7 +374,8 @@ async function checkDrm(){
       "仅 Windows<br>Edge 下受保护播放用"));
   }
 
-  if(SHOW_WV){
+  // HDCP 只有接外接显示器/采集卡才有意义，手机/Pad 上直接不显示
+  if(SHOW_WV && !IS_ANDROID && !IS_IOS){
     try{
       const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
       const mk=await acc.createMediaKeys();
