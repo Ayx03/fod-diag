@@ -70,7 +70,7 @@
 </head>
 <body>
 <h1>FOD 播放环境检测</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS</div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1253</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -188,7 +188,7 @@ const IS_EDGE_FAMILY=/Edg\/|EdgA\/|EdgiOS\//.test(UA);
 const IS_SAFARI=/Safari\//.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(UA);
 const IS_IOS_SAFARI=IS_IOS && IS_SAFARI;
 const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
-const IS_WECHAT_RAW=/MicroMessenger|WeChat\/|wxwork/i.test(UA);
+const IS_WECHAT_RAW=/MicroMessenger|WeChat\/|wxwork|MMWEBSDK|MMWEBID|XWEB\//i.test(UA);
 const IS_WECHAT=IS_WECHAT_RAW || /[?&]wx=1/.test(location.search);  // ?wx=1 可预览微信提示
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
