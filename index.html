@@ -379,26 +379,21 @@ async function checkDrm(){
       const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
       const mk=await acc.createMediaKeys();
       if(mk.getStatusForPolicy){
-        let st22="usable";
+        let st14="检测失败", st22="检测失败";
         for(const v of ["1.4","2.2"]){
           let st;
           try{ st=await mk.getStatusForPolicy({minHdcpVersion:v}); }catch(e){ st="检测失败"; }
-          if(v==="2.2"){ st22=st; DRM.hdcp=st; }
-          out.push(drmRow("HDCP "+v,'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>',
-            v==="1.4"?"720p / 1080p 只需要这一档":"4K 内容才强制要求"));
+          if(v==="1.4") st14=st; else { st22=st; DRM.hdcp=st; }
+          // 2.2 对 FOD 无意义，用灰色中性显示；1.4 才是关键
+          const cls = v==="1.4" ? (st==="usable"?"ok":"warn") : "dim";
+          out.push(drmRow("HDCP "+v,'<span class="'+cls+'">'+esc(st)+'</span>',
+            v==="1.4"?"720p / 1080p 只需要这一档":"4K 才强制要求，FOD 用不到"));
         }
-        const st=st22;
-        if(st!=="usable"){
-          const exp={
-            "output-restricted":"当前显示链路<b>不支持 HDCP 2.2</b>（只代表 2.2 这一档，HDCP 1.4 通常是正常的）。",
-            "output-downscaled":"受保护内容会被<b>降画质</b>播放（通常是分辨率被压到 480p/540p）。",
-            "output-blocked":"受保护内容<b>无法播放</b>，会被直接拦下。",
-            "usable-in-future":"当前可用，但链路状态可能随时变化。"
-          }[st] || ("状态为 "+st+"，播放受保护内容可能受限。");
+        if(st14!=="usable"){
           out.push('<div style="font-size:11.5px;color:#f1c40f;margin-top:6px;line-height:1.6">'+
-            exp+'<br><span style="color:#8b95a1">HDCP 2.2 主要影响 <b>4K</b>；720p / 1080p 一般只需要 HDCP 1.4，<b>多数情况下不影响播放</b>。'+
-            'NVIDIA 控制面板的「查看 HDCP 状态」只显示是否支持 HDCP，不区分 1.4 / 2.2。'+
-            '想确认 2.2：看显示器规格是否标明，绕开扩展坞 / KVM 直连，并确保线材是 HDMI 2.0 以上。</span></div>');
+            'HDCP 1.4 不达标：播放受保护内容时可能黑屏或降到标清。<br>'+
+            '<span style="color:#8b95a1">常见原因：接了扩展坞 / KVM / 转接头，或线材过旧。直连 HDMI、换线通常能改善。'+
+            'NVIDIA 控制面板的「查看 HDCP 状态」只显示是否支持 HDCP，不区分版本。</span></div>');
         }
       }
     }catch(e){}
