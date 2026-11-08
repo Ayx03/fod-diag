@@ -134,6 +134,8 @@ const IS_ANDROID=/Android/.test(UA);
 const IS_MAC=/Macintosh|Mac OS X/.test(UA)&&!IS_IOS;
 const IS_WIN=/Windows/.test(UA);
 const IS_EDGE=/Edg\//.test(UA);
+const IS_EDGE_FAMILY=/Edg\/|EdgA\/|EdgiOS\//.test(UA);
+const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
 
@@ -317,13 +319,19 @@ function checkDev(){
       "</b>。<br>Windows 上除 Edge 外的浏览器只能用 <b>Widevine 软件级（≈L3）</b>，画质会被压缩。"+
       "FOD 片源同时提供 <b>PlayReady</b>，而 Windows 上只有 Edge 支持它 —— 换 Edge 播放有可能拿到更高画质"+
       "（前提：显示链路支持 HDCP）。<br>"+
-      '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" style="color:var(--blue)">前往下载 Edge →</a>';
+      '<a href="microsoft-edge:'+location.href.split("#")[0]+'" style="color:var(--blue);font-weight:600">用 Edge 打开本页 →</a>'+
+      '<br><span style="color:#6f7883">Win10/11 一般都自带 Edge，点一下即可；若没反应再用 '+
+      '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" style="color:var(--blue)">下载页</a>。</span>';
   }
 
   const tip=$("mobiletip");
   if(IS_ANDROID){
     tip.style.display="block";
-    tip.innerHTML="⚠️ 安卓浏览器打开 FOD 网页<b>可能</b>被强制跳转 App。<br>可尝试在浏览器菜单里开启「桌面版网站」，<b>部分机型可行</b>；若仍跳转，请直接用 FOD App 播放。";
+    let t="⚠️ 安卓浏览器打开 FOD 网页<b>可能</b>被强制跳转 App。可尝试开启「桌面版网站」，<b>部分机型可行</b>；若仍跳转，请用 FOD App 播放。";
+    t += IS_CHROME
+      ? "<br>💡 当前是 Chrome，DRM 判定最准（其它安卓浏览器如 Edge 常把 L1 报成 L3）。"
+      : "<br>💡 当前不是 Chrome：安卓上非 Chrome 浏览器的 DRM 结论常常偏低（Edge 只报 L3）。建议用 <b>Chrome</b> 重新打开本页，或直接下载下方 App 做完整检测。";
+    tip.innerHTML=t;
   } else if(IS_IOS){
     tip.style.display="block";
     tip.innerHTML="⚠️ iPhone / iPad 的浏览器会被<b>强制跳转 App 或 App Store</b>，「桌面版网站」基本无效。<br>iOS 端只能用 FOD App 播放，本页仅用于诊断环境。";
@@ -344,7 +352,9 @@ function decide(){
     return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
 
   if(IS_ANDROID)
-    return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\nL1/L3、GMS、内购这类信息网页查不到，请下载下方 App。"];
+    return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
+      (IS_CHROME?"DRM 以 Chrome 的结论为准（最准）。\n":"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
+      "GMS、内购这些网页查不到，请下载下方 App。"];
   if(IS_IOS){
     const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
     if(iosv&&+iosv<15)
