@@ -89,7 +89,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1529</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1530</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -766,11 +766,12 @@ async function checkDrm(){
     let prHint="仅 Windows<br>Edge 下才提供";
     if(!pr.ok && IS_WIN){
       // 明确告诉客户怎么解决，而不是只说“不支持”
+      const lk='font-size:11.5px;line-height:1.7;display:inline-block';
       prHint += '<br><a href="microsoft-edge:'+location.href.split("#")[0]+'" '+
-        'style="color:var(--blue);font-weight:600">用 Edge 打开本页 →</a><br>'+
+        'style="color:var(--blue);font-weight:600;'+lk+'">用 Edge 打开本页 →</a><br>'+
         '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" '+
-        'style="color:var(--blue)">下载 Edge</a>'+
-        '<br><a href="#" data-jump="desktip" style="color:#8b95a1">↑ 看上面的说明</a>';
+        'style="color:var(--blue);'+lk+'">下载 Edge</a><br>'+
+        '<a href="#" data-jump="desktip" style="color:#8b95a1;'+lk+'">↑ 看上面的说明</a>';
     }
     out.push(drmRow("PlayReady",pr.ok?'<span class="ok">支持</span>':'<span class="bad">不支持</span>', prHint));
   }
