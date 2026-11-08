@@ -47,6 +47,11 @@
   .c1{background:linear-gradient(135deg,#ff4d6d,#c9184a)}
   .c2{background:linear-gradient(135deg,#f1c40f,#e67e22)}
   .c3{background:linear-gradient(135deg,#ff2442,#ff6b81)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .btnw{display:block;padding:12px 8px;border-radius:11px;text-align:center;text-decoration:none;
+        color:#fff;font-weight:700;font-size:13.5px;background:linear-gradient(135deg,#2b6cff,#1e4fd8)}
+  .btnw.alt{background:linear-gradient(135deg,#3a4553,#2a303a)}
+  .btnw:active{opacity:.85}
   .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .p{display:block;text-decoration:none;color:var(--fg);background:#232830;border:1px solid #2a2f37;
      border-radius:12px;padding:11px 10px;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4}
@@ -84,13 +89,31 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1433</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1434</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
 <div id="desktip" class="tip" style="display:none"></div>
 
 <div id="verdict"><div class="t"><span class="dot" style="background:#666"></span>正在检测…</div><div class="d dim">约需 10 秒</div></div>
+
+<div class="card" id="weblogin">
+  <h2>先用网页版登录试一下</h2>
+  <div style="font-size:12.5px;color:#c8ced6;line-height:1.75">
+    清<b>浏览器</b>的数据比清 App 数据省事（iPhone 还得删了重装）。<br>
+    网页登录一次就能确认：<b>账号密码对不对</b>、<b>会不会跳 300 错误页</b>。<br>
+    <span style="color:#8b95a1;font-size:11.5px">
+      部分账号网页能登录但播放仍需 App，这属正常；<b>电脑端浏览器可以直接观看</b>。
+    </span>
+  </div>
+  <div class="row2">
+    <a class="btnw" href="https://fod.fujitv.co.jp/auth/login/" target="_blank" rel="noopener">网页版登录 →</a>
+    <a class="btnw alt" href="https://fod.fujitv.co.jp/register/" target="_blank" rel="noopener">注册新账号 →</a>
+  </div>
+  <div style="font-size:11.5px;color:#8b95a1;margin-top:9px;line-height:1.6">
+    ⚠️ 注册页里的「登録」是<b>新建账号</b>。已经有账号的，点<b>左边的登录</b>，不要走右边。
+  </div>
+</div>
 
 <div class="card" id="faq">
   <h2>常见问题速查</h2>
