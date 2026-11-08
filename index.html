@@ -146,6 +146,8 @@ const IS_MAC=/Macintosh|Mac OS X/.test(UA)&&!IS_IOS;
 const IS_WIN=/Windows/.test(UA);
 const IS_EDGE=/Edg\//.test(UA);
 const IS_EDGE_FAMILY=/Edg\/|EdgA\/|EdgiOS\//.test(UA);
+const IS_SAFARI=/Safari\//.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(UA);
+const IS_IOS_SAFARI=IS_IOS && IS_SAFARI;
 const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
@@ -366,6 +368,11 @@ function checkDev(){
       '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" style="color:var(--blue)">下载页</a>。</span>';
   }
 
+  if(IS_MAC && !IS_SAFARI){
+    dtip.style.display="block";
+    dtip.innerHTML="💡 macOS 上只有 <b>Safari</b> 走 FairPlay；Chrome / Firefox 只能用 Widevine（桌面端通常为软件级）。<br>想在 Mac 上拿高画质，请用 Safari 打开本页重测。";
+  }
+
   const tip=$("mobiletip");
   if(IS_ANDROID){
     tip.style.display="block";
@@ -391,7 +398,11 @@ function checkDev(){
     tip.innerHTML=t;
   } else if(IS_IOS){
     tip.style.display="block";
-    tip.innerHTML="⚠️ iPhone / iPad 的浏览器会被<b>强制跳转 App 或 App Store</b>，「桌面版网站」基本无效。<br>iOS 端只能用 FOD App 播放，本页仅用于诊断环境。";
+    let t2="⚠️ iPhone / iPad 的浏览器会被<b>强制跳转 App 或 App Store</b>，「桌面版网站」基本无效。<br>iOS 端只能用 FOD App 播放，本页仅用于诊断环境。";
+    t2 += IS_IOS_SAFARI
+      ? "<br>💡 当前是 <b>Safari</b>，FairPlay 结论可信。"
+      : "<br>💡 iOS 上第三方浏览器都是 WKWebView 套壳，DRM 暴露可能不全，建议用 <b>Safari</b> 打开本页复测。";
+    tip.innerHTML=t2;
   }
 }
 
