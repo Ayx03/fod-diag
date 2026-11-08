@@ -188,7 +188,8 @@ const IS_EDGE_FAMILY=/Edg\/|EdgA\/|EdgiOS\//.test(UA);
 const IS_SAFARI=/Safari\//.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(UA);
 const IS_IOS_SAFARI=IS_IOS && IS_SAFARI;
 const IS_CHROME=/Chrome\//.test(UA) && !IS_EDGE_FAMILY && !/OPR\/|SamsungBrowser|Firefox/.test(UA);
-const IS_WECHAT=/MicroMessenger|WeChat\/|wxwork/i.test(UA);
+const IS_WECHAT_RAW=/MicroMessenger|WeChat\/|wxwork/i.test(UA);
+const IS_WECHAT=IS_WECHAT_RAW || /[?&]wx=1/.test(location.search);  // ?wx=1 可预览微信提示
 const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS":"iOS")
   :IS_ANDROID?"Android":IS_WIN?"Windows":IS_MAC?"macOS":"其他";
 
@@ -414,9 +415,10 @@ function checkDev(){
   if(IS_WECHAT){
     const wb=$("wxbanner");
     wb.style.display="block";
-    let h="⚠️ 你正在<b>微信内置浏览器</b>中打开本页。<br>"+
-          "微信的流量经常被代理规则绕过（不经过你的节点），这里测出来的结果可能不准。<br>"+
-          "请点右上角「···」→「在浏览器打开」后重新检测。";
+    let h="⚠️ 你在<b>微信内置浏览器</b>中打开本页。<br>"+
+          "它本质是 WebView 套壳，而且<b>微信的流量经常被代理规则绕过</b>（不走你的节点），<br>"+
+          "所以这里测出的 IP、地区判定、DRM 等级都可能不准。<br>"+
+          "请用右上角「···」→「在浏览器打开」后重新检测。";
     const ci=chromeIntent();
     if(ci) h+='<br><a href="'+ci+'" style="color:#ffd166;font-weight:600">用 Chrome 打开本页 →</a>';
     wb.innerHTML=h;
@@ -448,7 +450,7 @@ function checkDev(){
     tip.style.display="block";
     let t="⚠️ 安卓浏览器打开 FOD 网页<b>可能</b>被强制跳转 App。可尝试开启「桌面版网站」，<b>部分机型可行</b>；若仍跳转，请用 FOD App 播放。";
     const wv=webviewCheck();
-    if(wv.yes){
+    if(wv.yes && !IS_WECHAT){
       t += "<br>🚫 检测到你在用<b>套壳浏览器（WebView）</b>："+esc(wv.why)+
            "。Via、夸克这类把 UA 写成 Chrome，但 DRM 等级往往<b>报得偏低</b>（把 L1 报成 L3），设备本身可能支持 L1。";
     } else if(IS_CHROME){
