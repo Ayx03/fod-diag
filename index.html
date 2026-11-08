@@ -51,6 +51,7 @@
   .p{display:block;text-decoration:none;color:var(--fg);background:#232830;border:1px solid #2a2f37;
      border-radius:12px;padding:11px 10px;text-align:center;font-size:13.5px;font-weight:600;line-height:1.4}
   .p span{display:block;font-size:11px;color:#8b95a1;font-weight:400;margin-top:2px}
+  .hint{font-size:10.5px;color:#6f7883;font-weight:400;line-height:1.35;margin-top:2px}
 </style>
 </head>
 <body>
@@ -234,30 +235,53 @@ async function emeFairplay(){
 }
 async function checkDrm(){
   const out=[];
-  let wv=await eme("com.widevine.alpha","HW_SECURE_ALL");
-  if(wv.ok){ DRM.widevine="HW"; out.push(row("Widevine",'<span class="ok">硬件级（≈L1）</span>')); }
-  else{
-    const sw=await eme("com.widevine.alpha","SW_SECURE_CRYPTO");
-    if(sw.ok){ DRM.widevine="SW"; out.push(row("Widevine",'<span class="warn">软件级（≈L3）</span>')); }
+  const drmRow=(k,v,hint)=>'<div class="row"><span class="k">'+k+
+      '<div class="hint">'+hint+'</div></span><span class="v">'+v+'</span></div>';
+  const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
+  const SHOW_WV=!IS_IOS;                 // iOS 不支持 Widevine
+  const SHOW_FP=!KNOWN||IS_IOS||IS_MAC;  // 只有 Apple 设备可能支持 FairPlay
+  const SHOW_PR=!KNOWN||IS_WIN;          // 只有 Windows 可能支持 PlayReady
+
+  if(SHOW_WV){
+    let wv=await eme("com.widevine.alpha","HW_SECURE_ALL");
+    let v;
+    if(wv.ok){ DRM.widevine="HW"; v='<span class="ok">硬件级（≈L1）</span>'; }
     else{
-      const b=await eme("com.widevine.alpha",null);
-      DRM.widevine=b.ok?"BASIC":null;
-      out.push(row("Widevine",b.ok?'<span class="warn">可用，无等级声明</span>':'<span class="bad">不支持</span>'));
+      const sw=await eme("com.widevine.alpha","SW_SECURE_CRYPTO");
+      if(sw.ok){ DRM.widevine="SW"; v='<span class="warn">软件级（≈L3）</span>'; }
+      else{
+        const b=await eme("com.widevine.alpha",null);
+        DRM.widevine=b.ok?"BASIC":null;
+        v=b.ok?'<span class="warn">可用，无等级声明</span>':'<span class="bad">不支持</span>';
+      }
     }
+    out.push(drmRow("Widevine",v,"Chrome / Edge / Firefox<br>Windows、macOS、安卓"));
   }
-  const fp=await emeFairplay(); DRM.fairplay=fp.ok;
-  out.push(row("FairPlay",fp.ok?'<span class="ok">支持（Safari / Apple）</span>':'<span class="dim">不支持</span>'));
-  const pr=await eme("com.microsoft.playready",null); DRM.playready=pr.ok;
-  out.push(row("PlayReady",pr.ok?'<span class="ok">支持（Windows / Edge）</span>':'<span class="dim">不支持</span>'));
-  try{
-    const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
-    const mk=await acc.createMediaKeys();
-    if(mk.getStatusForPolicy){
-      const st=await mk.getStatusForPolicy({minHdcpVersion:"2.2"});
-      DRM.hdcp=st;
-      out.push(row("HDCP 2.2",'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>'));
-    } else out.push(row("HDCP 2.2",'<span class="dim">浏览器不提供</span>'));
-  }catch(e){ out.push(row("HDCP 2.2",'<span class="dim">无法检测</span>')); }
+
+  if(SHOW_FP){
+    const fp=await emeFairplay(); DRM.fairplay=fp.ok;
+    out.push(drmRow("FairPlay",fp.ok?'<span class="ok">支持</span>':'<span class="bad">不支持</span>',
+      "仅 Safari / Apple 设备<br>iPhone、iPad、Mac"));
+  }
+
+  if(SHOW_PR){
+    const pr=await eme("com.microsoft.playready",null); DRM.playready=pr.ok;
+    out.push(drmRow("PlayReady",pr.ok?'<span class="ok">支持</span>':'<span class="bad">不支持</span>',
+      "仅 Windows<br>Edge 下受保护播放用"));
+  }
+
+  if(SHOW_WV){
+    try{
+      const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
+      const mk=await acc.createMediaKeys();
+      if(mk.getStatusForPolicy){
+        const st=await mk.getStatusForPolicy({minHdcpVersion:"2.2"});
+        DRM.hdcp=st;
+        out.push(drmRow("HDCP 2.2",'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>',
+          "外接显示器 / 采集卡时关键<br>不达标会黑屏或降画质"));
+      }
+    }catch(e){}
+  }
 
   $("drm").innerHTML=out.join("")+
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
@@ -329,15 +353,19 @@ async function run(){
 
 $("again").onclick=run;
 $("copy").onclick=async()=>{
+  const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
+  const dp=[];
+  if(!IS_IOS) dp.push("Widevine: "+(DRM.widevine||"不支持"));
+  if(!KNOWN||IS_IOS||IS_MAC) dp.push("FairPlay: "+(DRM.fairplay?"支持":"否"));
+  if(!KNOWN||IS_WIN) dp.push("PlayReady: "+(DRM.playready?"支持":"否"));
+  if(DRM.hdcp) dp.push("HDCP2.2: "+DRM.hdcp);
   const lines=[
     "FOD 检测 "+new Date().toLocaleString(),
     "平台: "+PLATFORM,
     "出口: "+(R.net&&R.net.ok?R.net.ip+" "+R.net.country+" "+R.net.city:"失败"),
     "地区判定: "+(R.geo?(R.geo.ok?(R.geo.result?"日本 OK":"非日本"):"连不上"):"-"),
     "域名: "+Object.entries(R.hosts).map(([h,v])=>h+(v.ok?"通":"不通")).join(" "),
-    "Widevine: "+(DRM.widevine||"不支持")+" / FairPlay: "+(DRM.fairplay?"支持":"否")+
-      " / PlayReady: "+(DRM.playready?"支持":"否"),
-    "HDCP: "+(DRM.hdcp||"未知"),
+    "DRM: "+dp.join(" / "),
     "UA: "+UA
   ];
   try{
