@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1405</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1406</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -748,13 +748,15 @@ function decide(){
   if(IS_ANDROID){
     if(DRM.widevine===null){
       const ff=/Firefox|FxiOS/.test(UA);
-      return ["#f1c40f","浏览器报「不支持 Widevine」，先别急着换设备",
-        (ff?"Firefox 可能关闭了 DRM 播放（about:config 里把 media.eme.enabled 设为 true）。\n":"")+
-        "先按这个顺序试，很多是浏览器的问题，不是设备：\n"+
-        "① 用官方 Chrome 打开本页复测；\n"+
-        "② 下载下方 App 试一次 —— App 走系统播放器，不依赖浏览器设置；\n"+
-        "③ 两个都还是报错 / 黑屏，才是设备真的没有 Widevine 模块\n"+
-        "（华为 / 荣耀国内版 / 华为智选常见），那时候只能换设备，或在电脑上用 Chrome、Edge 看。"];
+      const steps=[];
+      if(!IS_CHROME) steps.push("用官方 Chrome 打开本页复测");
+      steps.push("下载下方 App 试一次 —— App 走系统播放器，不依赖浏览器设置");
+      let txt = ff ? "Firefox 可能关闭了 DRM 播放：about:config 里把 media.eme.enabled 设为 true。\n" : "";
+      txt += "先按这个顺序试，很多是浏览器设置问题，不是设备：\n";
+      steps.forEach((s,i)=>{ txt += (i+1) + ". " + s + "；\n"; });
+      txt += "都还是报错 / 黑屏，才是设备真的没有 Widevine 模块\n"+
+             "（华为 / 荣耀国内版 / 华为智选常见），那时只能换设备，或在电脑上用 Chrome、Edge 看。";
+      return ["#f1c40f","浏览器报「不支持 Widevine」，先别急着换设备", txt];
     }
     return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
       (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
