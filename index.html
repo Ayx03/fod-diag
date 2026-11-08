@@ -81,11 +81,14 @@
 <button id="again">重新检测</button>
 <button id="copy" style="margin-top:8px">复制结果文字</button>
 <div class="apkwrap">
-  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（可查 L1/L3、GMS、内购）</a>
+  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag.apk" download>下载 Android 检测 App（约 23 KB · 仅联网权限）</a>
   <div class="qrbox">
     <img alt="扫码下载" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAAEYAQMAAAC9QHvPAAAABlBMVEUNDxL///9hB4TGAAABKklEQVR42u2ay44DMQgEW/v//0yUGBqYjBRptadseS62xSUtKB6O4vMSNthg82sbnRXne969Tnkb8aPP61ttZB2fihyB9i36pL9EyLvjS7lHnxFdJQz63PhPwigCfW74Ez6lRPBH7/nLH/krf79zvczpVRoQXyomq7zJCEKfjKYMqeL1YBP6nOgqmcLhdTb/nj8by4NF+E/mrxKmS8V2H/RZoDakoxIZ+V0dZPMCfQZtotFzGZHA51bHjVi3X+jj9kLVfMU4w2fTp/1nVkbwZ7TwplE4zRNfbimctaZ6+M+e53eskd8v8x9pTJ7JX9rvF/2CYVbjP6vUCRdBUg2F0GfGU/tU4Rp95vtOzPEq7xf7pVTFHjWL0Mf5azVkoj+91D/8fwMbbP7W5gFjKtouo0JujQAAAABJRU5ErkJggg==">
     <div class="qrtip">扫一扫，传到手机安装</div>
   </div>
+</div>
+<div style="font-size:11px;color:#6f7883;margin:10px 2px 0;line-height:1.6">
+  安装包约 23 KB：只用「联网」这一项普通权限（安装即授予，不会有授权弹窗），不申请定位、存储、通讯录、电话等任何隐私权限；检测结果只在本机显示，不上传任何服务器。
 </div>
 
 <div class="card" style="margin-top:18px">
@@ -388,6 +391,8 @@ function checkDev(){
            "），DRM 结论可能偏低，建议用 Chrome 复测。";
     }
     t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
+    t += '<br><a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">↓ 下载检测 App（APK，约 23 KB）</a>';
+    t += '<br><span style="color:#6f7883;font-size:11px">仅联网一项普通权限（安装即授予，无任何弹窗），不申请定位 / 存储 / 通讯录 / 电话；检测结果只在本机显示，不上传、不回传。</span>';
     if(!IS_CHROME || wv.yes){
       t += '<br><a href="'+CHROME_STORE+'" target="_blank" rel="noopener" style="color:var(--blue)">没装 Chrome？去 Play 商店下载 →</a>';
     }
