@@ -379,10 +379,15 @@ async function checkDrm(){
       const acc=await navigator.requestMediaKeySystemAccess("com.widevine.alpha",vcfg(null));
       const mk=await acc.createMediaKeys();
       if(mk.getStatusForPolicy){
-        const st=await mk.getStatusForPolicy({minHdcpVersion:"2.2"});
-        DRM.hdcp=st;
-        out.push(drmRow("HDCP 2.2",'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>',
-          "外接显示器 / 采集卡时关键<br>不达标会黑屏或降画质"));
+        let st22="usable";
+        for(const v of ["1.4","2.2"]){
+          let st;
+          try{ st=await mk.getStatusForPolicy({minHdcpVersion:v}); }catch(e){ st="检测失败"; }
+          if(v==="2.2"){ st22=st; DRM.hdcp=st; }
+          out.push(drmRow("HDCP "+v,'<span class="'+(st==="usable"?"ok":"warn")+'">'+esc(st)+'</span>',
+            v==="1.4"?"720p / 1080p 只需要这一档":"4K 内容才强制要求"));
+        }
+        const st=st22;
         if(st!=="usable"){
           const exp={
             "output-restricted":"当前显示链路<b>不支持 HDCP 2.2</b>（只代表 2.2 这一档，HDCP 1.4 通常是正常的）。",
