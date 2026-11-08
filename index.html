@@ -108,6 +108,8 @@
 </div>
 
 <script>
+const CHROME_STORE="https://play.google.com/store/apps/details?id=com.android.chrome&hl=zh-cn";
+const APK_URL="./fod-diag.apk";
 const GEO="https://geo.fod.j-stream.jp/api/check";
 const HOSTS=[
  ["fod.fujitv.co.jp","主页 / 主要接口"],
@@ -174,6 +176,9 @@ function verdict(color,title,desc){
   $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
+  const _d=$("verdict").querySelector(".d");
+  if(_d) _d.innerHTML=_d.innerHTML.replace(/下载下方\s*App|下方\s*App/g,
+      '<a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">下载 App</a>');
 }
 
 async function withTimeout(p,ms){
@@ -331,7 +336,7 @@ async function checkDrm(){
   $("drm").innerHTML=out.join("")+
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
     '以上是浏览器声明的能力（EME），不代表服务端最终授权。'+
-    (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 App 检测。':'')+'</div>';
+    (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 <a href="'+APK_URL+'" download style="color:var(--blue)">App</a> 检测。':'')+'</div>';
 }
 
 function checkDev(){
@@ -367,6 +372,9 @@ function checkDev(){
            "），DRM 结论可能偏低，建议用 Chrome 复测。";
     }
     t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
+    if(!IS_CHROME){
+      t += '<br><a href="'+CHROME_STORE+'" target="_blank" rel="noopener" style="color:var(--blue)">没装 Chrome？去 Play 商店下载 →</a>';
+    }
     if(!IS_CHROME || wv.yes){
       const ci=chromeIntent();
       if(ci) t += '<br><a href="'+ci+'" style="color:var(--blue);font-weight:600">用 Chrome 打开本页 →</a>';
