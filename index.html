@@ -142,6 +142,21 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const row=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
 
+/* 复制文本脱敏：避免客户发到微信/QQ 时被风控 */
+function sanitize(s){
+  return s
+    .replace(/\b(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}\b/g, "$1.$2.*.*")
+    .replace(/VPN\s*\/\s*代理通道/g, "加密通道")
+    .replace(/VPN\s*\/\s*代理/g, "加密通道")
+    .replace(/VPN/gi, "加密通道")
+    .replace(/TUN\s*网卡/g, "虚拟网卡")
+    .replace(/代理/g, "中转")
+    .replace(/机场/g, "线路")
+    .replace(/节点/g, "线路")
+    .replace(/翻墙|科学上网|梯子/g, "")
+    .replace(/Clash|clash|mihomo|verge/gi, "客户端");
+}
+
 const UA=navigator.userAgent;
 const IS_IOS=/iPad|iPhone|iPod/.test(UA)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const IS_ANDROID=/Android/.test(UA);
@@ -262,15 +277,18 @@ async function checkGeo(){
 }
 
 async function checkHosts(){
-  const out=[];
+  const box=$("hosts");
+  const holder={};   // 每条测完先显示，最后按固定顺序重排一次
   await Promise.all(HOSTS.map(async ([h,label])=>{
     const r=await reachable("https://"+h+"/?t="+Date.now(),9000);
-    R.hosts[h]={ok:r.ok,ms:r.ms}; out.push([h,label,r]);
+    R.hosts[h]={ok:r.ok,ms:r.ms};
+    holder[h]={label:label,r:r};
+    box.innerHTML=HOSTS.filter(x=>holder[x[0]]).map(([hh])=>{
+      const item=holder[hh];
+      return row(hh+'<div style="font-size:11px;color:#6f7883">'+esc(item.label)+'</div>',
+        item.r.ok?'<span class="ok">通 '+item.r.ms+'ms</span>':'<span class="bad">不通</span>');
+    }).join("");
   }));
-  out.sort((a,b)=>a[0].localeCompare(b[0]));
-  $("hosts").innerHTML=out.map(([h,label,r])=>
-    row(h+'<div style="font-size:11px;color:#6f7883">'+esc(label)+'</div>',
-        r.ok?'<span class="ok">通 '+r.ms+'ms</span>':'<span class="bad">不通</span>')).join("");
 }
 
 /* ---------- DRM ---------- */
@@ -299,7 +317,8 @@ async function emeFairplay(){
   return {ok:false};
 }
 async function checkDrm(){
-  const out=[];
+  const box=$("drm"); box.innerHTML="";
+  const out={push:function(){ box.insertAdjacentHTML("beforeend", Array.prototype.join.call(arguments,"")); }};
   const drmRow=(k,v,hint)=>'<div class="row"><span class="k">'+k+
       '<div class="hint">'+hint+'</div></span><span class="v">'+v+'</span></div>';
   const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
@@ -348,11 +367,11 @@ async function checkDrm(){
     }catch(e){}
   }
 
-  $("drm").innerHTML=out.join("")+
+  box.insertAdjacentHTML("beforeend",
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
     '以上是浏览器声明的能力（EME），不代表服务端最终授权。<br>'+
     '<b style="color:#8b95a1">个别项不支持或检测不到属正常，只要能正常播放就无需处理。</b>'+
-    (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 <a href="'+APK_URL+'" download style="color:var(--blue)">App</a> 检测。':'')+'</div>';
+    (IS_ANDROID?'<br>Android 的真实 L1/L3、GMS、内购需用原生 <a href="'+APK_URL+'" download style="color:var(--blue)">App</a> 检测。':'')+'</div>');
 }
 
 function checkDev(){
@@ -475,7 +494,7 @@ $("copy").onclick=async()=>{
   L.push("FOD 检测 " + new Date().toLocaleString());
   L.push("平台: " + PLATFORM + " · " + ((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知浏览器"])[0]));
   if(R.net&&R.net.ok){
-    L.push("出口: " + R.net.ip + " (" + (R.net.country||R.net.cc) + (R.net.city?" / "+R.net.city:"") + ")" + (R.net.isp?" · "+R.net.isp:""));
+    L.push("出口: " + R.net.ip + " (" + (R.net.country||R.net.cc) + (R.net.city?" / "+R.net.city:"") + ")");
   }else{
     L.push("出口: 获取失败");
   }
@@ -495,7 +514,7 @@ $("copy").onclick=async()=>{
     R.verdict.desc.split("\n").forEach(s=>L.push("  " + s));
   }
   L.push("UA: " + UA);
-  const text=L.join("\n");
+  const text=sanitize(L.join("\n"));
   try{
     await navigator.clipboard.writeText(text);
     $("copy").textContent="已复制";
