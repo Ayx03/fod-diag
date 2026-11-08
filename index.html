@@ -141,6 +141,33 @@ const PLATFORM=IS_IOS?(/iPad/.test(UA)||navigator.platform==="MacIntel"?"iPadOS"
 
 const R={net:null,geo:null,hosts:{}};
 
+/* 套壳浏览器（WebView）识别：UA 可以伪造，但这些对象伪造不了 */
+function webviewCheck(){
+  if(!IS_ANDROID) return {yes:false,why:""};
+  let score=0; const why=[];
+  const uad=navigator.userAgentData;
+  if(!uad){
+    score+=2; why.push("无 Client Hints");
+  }else{
+    const b=((uad.brands)||[]).map(x=>x.brand).join(",");
+    if(b && !/Google Chrome/.test(b)){ score+=3; why.push("Client Hints 无 Google Chrome（"+b+"）"); }
+  }
+  if(typeof window.chrome==="undefined"){ score+=2; why.push("无 window.chrome"); }
+  if(typeof Notification==="undefined"){ score+=2; why.push("无 Notification"); }
+  if(typeof navigator.getInstalledRelatedApps!=="function"){ score+=1; why.push("无 getInstalledRelatedApps"); }
+  if(/;\s*wv\)/.test(UA)){ score+=5; why.push("UA 含 wv"); }
+  return {yes:score>=2, score:score, why:why.join(" · ")};
+}
+
+/* 安卓上拉起 Chrome 的 Intent 链接 */
+function chromeIntent(){
+  const here=location.href;
+  const body=here.replace(/^https?:\/\//,"");
+  if(!/^https?:\/\//.test(here)) return "";
+  return "intent://"+body+"#Intent;scheme=https;package=com.android.chrome;"+
+         "S.browser_fallback_url="+encodeURIComponent(here)+";end";
+}
+
 function verdict(color,title,desc){
   R.verdict={title:title,desc:desc};
   $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
@@ -328,9 +355,18 @@ function checkDev(){
   if(IS_ANDROID){
     tip.style.display="block";
     let t="⚠️ 安卓浏览器打开 FOD 网页<b>可能</b>被强制跳转 App。可尝试开启「桌面版网站」，<b>部分机型可行</b>；若仍跳转，请用 FOD App 播放。";
-    t += IS_CHROME
-      ? "<br>💡 当前是 Chrome，DRM 判定最准（其它安卓浏览器如 Edge 常把 L1 报成 L3）。"
-      : "<br>💡 当前不是 Chrome：安卓上非 Chrome 浏览器的 DRM 结论常常偏低（Edge 只报 L3）。建议用 <b>Chrome</b> 重新打开本页，或直接下载下方 App 做完整检测。";
+    const wv=webviewCheck();
+    if(wv.yes){
+      t += "<br>🚫 检测到你在用<b>套壳浏览器（WebView）</b>："+esc(wv.why)+
+           "。Via、夸克这类把 UA 写成 Chrome，但 DRM 往往只报 L3，数值不可信。";
+    } else if(IS_CHROME){
+      t += "<br>💡 当前是官方 Chrome，DRM 判定最准（Edge 常把 L1 报成 L3）。";
+    }
+    t += '<br><span style="color:#8b95a1;font-size:11.5px">只有官方 Chrome 报出的 L1 才作数，套壳浏览器一律按 App 结果为准。</span>';
+    if(!IS_CHROME || wv.yes){
+      const ci=chromeIntent();
+      if(ci) t += '<br><a href="'+ci+'" style="color:var(--blue);font-weight:600">用 Chrome 打开本页 →</a>';
+    }
     tip.innerHTML=t;
   } else if(IS_IOS){
     tip.style.display="block";
@@ -353,7 +389,9 @@ function decide(){
 
   if(IS_ANDROID)
     return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
-      (IS_CHROME?"DRM 以 Chrome 的结论为准（最准）。\n":"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
+      (webviewCheck().yes?"⚠️ 套壳浏览器，DRM 数值不可信，请用官方 Chrome 或 App 复测。\n"
+        :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
+        :"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
       "GMS、内购这些网页查不到，请下载下方 App。"];
   if(IS_IOS){
     const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
