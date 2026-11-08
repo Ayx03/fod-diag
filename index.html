@@ -137,7 +137,8 @@ async function withTimeout(p,ms){
 async function reachable(url,ms){
   const t0=performance.now();
   try{
-    await withTimeout(s=>fetch(url,{mode:"no-cors",cache:"no-store",redirect:"manual",signal:s}),ms||9000);
+    // 普通 no-cors：只要服务器有响应（含 3xx/4xx）resolve 就是 opaque 响应，即“通”
+    await withTimeout(s=>fetch(url,{mode:"no-cors",cache:"no-store",signal:s}),ms||9000);
     return {ok:true,ms:Math.round(performance.now()-t0)};
   }catch(e){ return {ok:false,ms:Math.round(performance.now()-t0)}; }
 }
@@ -168,6 +169,7 @@ async function checkNet(){
     return;
   }
   R.net=good[0];
+  R.net.ok=true;
   const ccs=[...new Set(good.map(r=>r.cc).filter(Boolean))];
   let html=good.map(r=>{
     const cls=r.cc==="JP"?"ok":(r.cc==="CN"||r.cc==="HK")?"bad":"";
