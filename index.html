@@ -89,7 +89,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1524</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1528</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -762,8 +762,16 @@ async function checkDrm(){
 
   if(SHOW_PR){
     const pr=await eme("com.microsoft.playready",null); DRM.playready=pr.ok;
-    out.push(drmRow("PlayReady",pr.ok?'<span class="ok">支持</span>':'<span class="bad">不支持</span>',
-      "仅 Windows<br>Edge 下受保护播放用"));
+    let prHint="仅 Windows<br>Edge 下才提供";
+    if(!pr.ok && IS_WIN){
+      // 明确告诉客户怎么解决，而不是只说“不支持”
+      prHint += '<br><a href="microsoft-edge:'+location.href.split("#")[0]+'" '+
+        'style="color:var(--blue);font-weight:600">用 Edge 打开本页 →</a><br>'+
+        '<a href="https://www.microsoft.com/edge" target="_blank" rel="noopener" '+
+        'style="color:var(--blue)">下载 Edge</a>'+
+        '<br><a href="#" data-jump="desktip" style="color:#8b95a1">↑ 看上面的说明</a>';
+    }
+    out.push(drmRow("PlayReady",pr.ok?'<span class="ok">支持</span>':'<span class="bad">不支持</span>', prHint));
   }
 
   // HDCP 只有接外接显示器/采集卡才有意义，手机/Pad 上直接不显示
@@ -999,6 +1007,16 @@ $("copyFull").onclick=()=>{ $("modal").style.display="flex"; };
 $("modalCancel").onclick=()=>{ $("modal").style.display="none"; };
 $("modalOk").onclick=()=>{ $("modal").style.display="none"; copyText(buildReport(), "已复制完整版"); };
 $("modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("modal").style.display="none"; });
+
+// 通用页内跳转（如 PlayReady 行里的“看上面的说明”）
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("[data-jump]");
+  if (!a) return;
+  const el = document.getElementById(a.getAttribute("data-jump"));
+  if (!el) return;
+  e.preventDefault();
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+});
 
 // 页内跳转到商城（环境正常时的引流链接）
 document.addEventListener("click", e => {
