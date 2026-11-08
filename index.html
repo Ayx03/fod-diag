@@ -83,7 +83,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1312</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1314</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -371,6 +371,14 @@ async function reachable(url,ms){
 }
 
 /* ---------- 出口 IP ---------- */
+/* 各家接口字段不统一：ipinfo 把 ASN 塞在 org 里（"AS134972 IKUUU NETWORK LTD"） */
+function normNet(asn, isp){
+  asn=String(asn==null?"":asn).trim(); isp=String(isp==null?"":isp).trim();
+  const m=isp.match(/^(AS\s?\d+)\s+(.+)$/i);
+  if(m){ if(!asn) asn=m[1]; isp=m[2]; }
+  asn=asn.replace(/^AS\s?/i,"").trim();
+  return {asn: /^\d+$/.test(asn)?("AS"+asn):(asn?asn:""), isp:isp};
+}
 function pick(o,keys){ for(const k of keys){ const v=o[k]; if(v!==undefined&&v!==null&&v!=="") return String(v);} return ""; }
 async function oneApi(api){
   try{
@@ -383,7 +391,11 @@ async function oneApi(api){
       cc:pick(o,["country_code","countryCode","country"]).toUpperCase(),
       country:pick(o,["country_name","country"]),
       city:pick(o,["city"]),
-      isp:pick(o,["isp","org"])||((o.connection&&o.connection.isp)||"")};
+      ...normNet(
+        pick(o,["asn","as_number"])||((o.connection&&(o.connection.asn||o.connection.as_number))||""),
+        pick(o,["isp","org","organization","asn_org"])||
+          ((o.connection&&(o.connection.isp||o.connection.org))||"")
+      )};
   }catch(e){ return {src:api.n,err:e.name==="AbortError"?"超时":(e.message||"失败")}; }
 }
 async function checkNet(){
@@ -406,6 +418,18 @@ async function checkNet(){
   html+=ccs.length>1
     ? row("汇总",'<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>')
     : row("汇总",'<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length+" 源一致 · "+esc(ccs[0]||"?")+'</span>');
+  // 同一家运营商的写法有差异（IKUUU NETWORK LTD / Ikuuu Network），去掉被包含的短写法
+  let isps=[...new Set(good.map(r=>r.isp).filter(Boolean))];
+  isps=isps.filter(x=>!isps.some(y=>y!==x && y.toLowerCase().startsWith(x.toLowerCase())));
+  const asns=[...new Set(good.map(r=>r.asn).filter(Boolean))];
+  if(isps.length){
+    html+=row("运营商", esc(isps.slice(0,2).join(" / "))+
+      (isps.length>2?' <span class="dim">+'+((isps.length-2))+'</span>':''));
+  }
+  if(asns.length){
+    html+=row("ASN", esc(asns.slice(0,2).join(" / "))+
+      (asns.length>2?' <span class="dim">+'+((asns.length-2))+'</span>':''));
+  }
   $("net").innerHTML=html;
 }
 
@@ -671,6 +695,7 @@ function buildReport(){
   L.push("平台: " + PLATFORM + " · " + ((UA.match(/(Edg|OPR|Chrome|Firefox|Version)\/?[\d\.]+/)||["未知浏览器"])[0]));
   if(R.net&&R.net.ok){
     L.push("出口: " + R.net.ip + " (" + (R.net.country||R.net.cc) + (R.net.city?" / "+R.net.city:"") + ")");
+    if(R.net.isp) L.push("运营商: " + R.net.isp + (R.net.asn ? " (" + R.net.asn + ")" : ""));
   }else{
     L.push("出口: 获取失败");
   }
