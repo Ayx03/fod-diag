@@ -402,6 +402,7 @@ function checkDev(){
     t2 += IS_IOS_SAFARI
       ? "<br>💡 当前是 <b>Safari</b>，FairPlay 结论可信。"
       : "<br>💡 iOS 上第三方浏览器都是 WKWebView 套壳，DRM 暴露可能不全，建议用 <b>Safari</b> 打开本页复测。";
+    t2 += "<br>💡 FOD App 只在<b>日本区 App Store</b> 上架，中国区账号搜不到 —— 装不上多半是 Apple ID 区服问题，不是设备问题。";
     tip.innerHTML=t2;
   }
 }
