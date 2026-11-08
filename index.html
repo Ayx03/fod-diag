@@ -60,6 +60,10 @@
   details[open] summary::before{content:"▾ "}
   .faqbody{font-size:12.5px;color:#b9c4d0;line-height:1.75;padding:8px 0 2px 14px}
   .faqbody b{color:#e8eaed}
+  .copybtn{display:inline-block;margin:8px 0 4px;padding:7px 14px;border-radius:9px;border:1px solid #3a4553;
+           background:#232830;color:#e8eaed;font-size:12.5px;font-family:inherit}
+  .copybtn:active{background:#2c323c}
+  .jpname{color:#7fd1ff;font-weight:700}
   .faqbody .kbd{background:#232830;border:1px solid #333a44;border-radius:5px;padding:1px 5px;font-size:12px;color:#e8eaed}
   .apkwrap{position:relative}
   .qrbox{display:none;position:absolute;right:10px;top:100%;margin-top:8px;z-index:20;
@@ -79,7 +83,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1302</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1310</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -144,6 +148,17 @@
       安卓：设置 → 应用 → 管理应用 → 搜「FOD」→ 存储 → <b>清除数据</b><br>
       苹果：设置 → 通用 → iPhone 储存空间 → FOD → <b>删除 App</b>（或卸载后重装）<br><br>
       清完需要重新登录，这时点 <b>ログイン</b>，<b>不要点登録</b>。
+    </div>
+  </details>
+
+  <details>
+    <summary>搜不到「杀旅」——中文搜不到，要用日文原名</summary>
+    <div class="faqbody">
+      FOD 的搜索框只认<b>日文原名</b>，用中文「杀旅」「杀旅」是搜不出来的。<br>
+      正确名称：<b class="jpname">あなたを殺す旅</b>
+      <div><button class="copybtn" data-copy="あなたを殺す旅">复制日文名</button></div>
+      复制后粘到 App 顶部搜索框即可。<br>
+      也可以直接在<b>首页</b>往下翻，它排在比较靠前的位置（国内ドラマ 分类里也有）。
     </div>
   </details>
 
@@ -701,6 +716,25 @@ $("copyFull").onclick=()=>{ $("modal").style.display="flex"; };
 $("modalCancel").onclick=()=>{ $("modal").style.display="none"; };
 $("modalOk").onclick=()=>{ $("modal").style.display="none"; copyText(buildReport(), "已复制完整版"); };
 $("modal").addEventListener("click",e=>{ if(e.target.id==="modal") $("modal").style.display="none"; });
+
+// FAQ 里的一键复制（日文名等）
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-copy]");
+  if (!b) return;
+  const txt = b.getAttribute("data-copy");
+  const done = () => { const o = b.textContent; b.textContent = "已复制"; setTimeout(() => b.textContent = o, 1400); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => {
+      const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand("copy"); done(); } catch (_) {}
+      document.body.removeChild(ta);
+    });
+  } else {
+    const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand("copy"); done(); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+});
 
 run();
 </script>
