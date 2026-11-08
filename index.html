@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1547</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1953</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -1166,6 +1166,20 @@ document.addEventListener("click", e => {
 });
 
 run();
+
+// ?member / ?buy / ?shop → 直接滚到代充会员卡片并高亮一下
+const qp=new URLSearchParams(location.search);
+if(qp.has("member")||qp.has("buy")||qp.has("shop")){
+  const go=()=>{
+    const s=document.getElementById("shop");
+    if(!s)return;
+    s.scrollIntoView({behavior:"smooth",block:"start"});
+    s.animate([{boxShadow:"0 0 0 4px rgba(255,209,102,.9)"},{boxShadow:"0 0 0 4px rgba(255,209,102,0)"}],
+               {duration:2200,easing:"ease-out"});
+  };
+  if(document.readyState==="complete") setTimeout(go,80);
+  else addEventListener("load",()=>setTimeout(go,80));
+}
 </script>
 </body>
 </html>
