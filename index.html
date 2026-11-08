@@ -84,7 +84,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1428</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1433</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -703,9 +703,9 @@ function checkDev(){
   const dtip=$("desktip");
   if(IS_WIN && !IS_EDGE){
     dtip.style.display="block";
-    dtip.innerHTML="💡 检测到你在 Windows 上使用 <b>"+esc((UA.match(/(Chrome|Firefox|Edg|OPR)\/[\d\.]+/)||["非 Edge 浏览器"])[0])+
-      "</b>。<br>Windows 上除 Edge 外的浏览器只能用 <b>Widevine 软件级（≈L3）</b>，画质会被压缩。"+
-      "FOD 片源同时提供 <b>PlayReady</b>，而 Windows 上只有 Edge 支持它 —— 换 Edge 播放有可能拿到更高画质"+
+    dtip.innerHTML="💡 你在 Windows 上用的是 <b>"+esc((UA.match(/(Chrome|Firefox|Edg|OPR)\/[\d\.]+/)||["非 Edge 浏览器"])[0])+
+      "</b>，非 Edge 浏览器只能走 <b>Widevine 软件级（≈L3）</b>，画质会被压缩。"+
+      "FOD 片源同时提供 <b>PlayReady</b>，Windows 上只有 Edge 支持 —— 换 Edge 有机会拿到更高画质"+
       "（前提：显示链路支持 HDCP）。<br>"+
       '<a href="microsoft-edge:'+location.href.split("#")[0]+'" style="color:var(--blue);font-weight:600">用 Edge 打开本页 →</a>'+
       '<br><span style="color:#6f7883">Win10/11 一般都自带 Edge，点一下即可；若没反应再用 '+
@@ -802,8 +802,7 @@ function decide(){
   }
   if(IS_WIN)
     return (DRM.widevine||DRM.playready)
-      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。"+
-           (IS_EDGE?"":"\n当前不是 Edge：只能走 Widevine 软件级，换 Edge 可能解锁更高画质。")]
+      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。"]
       : ["#e74c3c","浏览器不支持受保护播放","请改用 Chrome / Edge，并确认 Widevine 组件正常。"];
   if(IS_MAC)
     return DRM.fairplay
