@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1534</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1108-1538</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -331,7 +331,7 @@
     </div>
   </details>
 
-  <details data-dev="android ios">
+  <details data-dev="all">
     <summary>在微信里打开，检测结果是「中国」</summary>
     <div class="faqbody">
       微信内置浏览器经常绕开代理（不走你的节点），所以 IP 显示中国是正常的。<br>
@@ -827,12 +827,20 @@ function checkDev(){
   if(IS_WECHAT){
     const wb=$("wxbanner");
     wb.style.display="block";
-    let h="⚠️ 你在<b>微信内置浏览器</b>中打开本页。<br>"+
-          "它本质是 WebView 套壳，而且<b>微信的流量经常被代理规则绕过</b>（不走你的节点），<br>"+
-          "所以这里测出的 IP、地区判定、DRM 等级都可能不准。<br>"+
-          "请用右上角「···」→「在浏览器打开」后重新检测。";
-    const ci=chromeIntent();
-    if(ci) h+='<br><a href="'+ci+'" style="color:#ffd166;font-weight:600">用 Chrome 打开本页 →</a>';
+    let h="⚠️ 你在<b>微信内置浏览器</b>中打开本页。<br>";
+    if(IS_ANDROID){
+      h+="它本质是 WebView 套壳，而且<b>微信的流量经常被代理规则绕过</b>（不走你的节点），<br>"+
+         "所以这里测出的 IP、地区判定、DRM 等级都可能不准。<br>"+
+         "请用右上角「···」→「<b>在浏览器打开</b>」后重新检测。";
+      const ci=chromeIntent();
+      if(ci) h+='<br><a href="'+ci+'" style="color:#ffd166;font-weight:600">用 Chrome 打开本页 →</a>';
+    }else{
+      h+="微信客户端的内置浏览器可能<b>不跟随系统代理</b>，测出的 IP 和地区判定可能不对。<br>"+
+         "把下面这个地址<b>复制到 Chrome / Edge 里打开</b>再测一次：<br>"+
+         '<span style="color:#ffd166;word-break:break-all;font-size:12px">'+location.href.split("#")[0]+'</span>'+
+         '<br><a href="#" onclick="return false" data-copy="'+location.href.split("#")[0].replace(/"/g,"&quot;")+'" '+
+         'style="color:#ffd166;font-weight:600">复制链接</a>';
+    }
     wb.innerHTML=h;
   }
   $("dev").innerHTML=
