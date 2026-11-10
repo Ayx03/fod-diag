@@ -92,7 +92,7 @@
 </head>
 <body>
 <h1>FOD 检测与常见问题</h1>
-<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1110-1442</span></div>
+<div class="sub">浏览器内直接检测，结果不外传 · 手机 / Pad / Windows / macOS<br><span id="build" style="color:#4a5560">build 1110-1446</span></div>
 
 <div id="wxbanner" class="tip" style="display:none;background:#2a1f0d;border-color:#7a4a00;color:#ffcc80"></div>
 <div id="mobiletip" class="tip" style="display:none"></div>
@@ -163,17 +163,22 @@
   <div id="faqnote" style="font-size:11.5px;color:#6f7883;margin:-4px 0 8px"></div>
 
   <details open data-dev="android ios">
-    <summary style="color:#ff8fa3">⚠️ App 提示需要更新 / 打不开（最近集中出现）</summary>
+    <summary style="color:#ff8fa3">⚠️ 打开就弹「アップデート確認」，进不去 App</summary>
     <div class="faqbody">
-      FOD 已经<b>停止支持旧版 App</b>，服务端会直接拒绝旧版本登录和播放。<br>
-      这不是网络问题 —— <b>换节点、改 DNS、重装旧版都没用</b>，只有更新 App 才行。<br><br>
-      <b>安卓</b>：到 Google Play 更新（搜「FOD」，或直接打开
-      <span class="kbd">play.google.com/store/apps/details?id=air.jp.co.fujitv.fodviewer</span>）。<br>
-      <b>iPhone / iPad</b>：到 App Store 更新即可。<br><br>
-      <b>安卓但没有 Google Play</b>（大陆最常见）：<br>
-      直接用 <b>Chrome 打开 <span class="kbd">fod.fujitv.co.jp</span></b> 登录观看。
-      网页版不用安装、不会被强制更新，功能和 App 基本一致。<br><br>
-      更新完或改用网页后还是打不开 → <b>回到本页重新检测</b>，按结果看下面条目。
+      打开 App 后只弹一个框，<b>没有「稍后」按钮</b>，点不掉：<br>
+      <span class="kbd">アップデート確認</span><br>
+      <span class="kbd">新しいバージョンのアプリが配信されています。ストアからアプリをアップデートしてください。</span><br>
+      <span class="kbd">［ ストアへ ］</span><br><br>
+      意思是：<b>有新版本了，请从应用商店更新</b>。<br>
+      这是<b>强制更新</b>，旧版已被服务端拒绝 ——
+      <b>换节点、改 DNS、重装旧版都不会有用</b>，只有更新 App 才行。<br><br>
+      <b>安卓</b>：点「ストアへ」会跳 Google Play；跳不过去就直接打开
+      <span class="kbd">play.google.com/store/apps/details?id=air.jp.co.fujitv.fodviewer</span><br>
+      <b>iPhone / iPad</b>：点「ストアへ」跳 App Store，直接更新。<br><br>
+      <b>点「ストアへ」没反应 / 打不开 Play</b>（大陆最常见）：<br>
+      直接用 <b>Chrome 打开 <span class="kbd">fod.fujitv.co.jp</span></b> 登录观看 ——
+      网页版不用安装、不会被强制更新，账号和会员都通用。<br><br>
+      更新完或改用网页后还是不行 → <b>回到本页重新检测</b>，按结果看下面条目。
     </div>
   </details>
 
