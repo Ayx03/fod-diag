@@ -25,6 +25,8 @@
   #verdict .t{font-size:16px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
   #verdict .d{font-size:13.5px;color:#c8ced6;white-space:pre-wrap}
   .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .dot.breathe{animation:breathe 1.3s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1.2)}}
   button{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);
          background:#232830;color:var(--fg);font-size:15px;margin-top:4px;font-family:inherit}
   button:active{background:#2c323c}
@@ -611,19 +613,16 @@ const pendRow=(k,sub,key)=>'<div class="row" data-k="'+(key||k)+'"><span class="
 const PROG={total:0,done:0,spin:0,timer:null,on:false};
 const SPINC=["◐","◓","◑","◒"];
 function progText(){
-  return SPINC[PROG.spin]+" 正在检测… "+PROG.done+" / "+PROG.total+" 项";
+  return "正在检测… "+PROG.done+" / "+PROG.total+" 项";
 }
 function progTick(){
   if(!PROG.on) return;
-  PROG.spin=(PROG.spin+1)%SPINC.length;
   verdict("#666",progText(),"本地项先出结果，网络项稍后填进来");
 }
 function progStart(){
   PROG.total=document.querySelectorAll('.spin').length;
-  PROG.done=0; PROG.spin=0; PROG.on=true;
+  PROG.done=0; PROG.on=true;
   progTick();
-  clearInterval(PROG.timer);
-  PROG.timer=setInterval(progTick,200);
 }
 function progStop(){
   PROG.on=false; clearInterval(PROG.timer);
@@ -701,7 +700,7 @@ function chromeIntent(){
 
 function verdict(color,title,desc){
   R.verdict={title:title,desc:desc};
-  $("verdict").innerHTML='<div class="t"><span class="dot" style="background:'+color+'"></span>'+esc(title)+
+  $("#verdict").innerHTML='<div class="t"><span class="dot'+(PROG.on?' breathe':'')+'" style="background:'+color+'"></span>'+esc(title)+
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
   const _d=$("verdict").querySelector(".d");
