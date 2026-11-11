@@ -1,7 +1,7 @@
 {
-  "versionCode": 18,
-  "versionName": "2.7",
+  "versionCode": 19,
+  "versionName": "2.8",
   "size": "38.3 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "界面与网页端统一：卡片式分区、左键右值、圆点结论条；新增常见问题（23 条）、运营商/ASN 识别、FOD 6.3.3 强制更新提示"
+  "notes": "修复结论条文字过大的问题（字号单位重复换算）；界面与网页统一为卡片式"
 }
