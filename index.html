@@ -162,6 +162,23 @@
   </div>
   <div id="faqnote" style="font-size:11.5px;color:#6f7883;margin:-4px 0 8px"></div>
 
+  <details data-dev="win mac">
+    <summary style="color:#ffd166">⚠️ 提示「您必须启用 DRM」/ 浏览器不支持受保护播放</summary>
+    <div class="faqbody">
+      这不等于设备不支持 —— 绝大多数情况是浏览器把「受保护内容（DRM）」关掉了。
+      <br><br>
+      <b>Edge / Chrome</b>：地址栏下方会出现灰色横条<br>
+      「您必须启用 DRM 才能播放此页面上的某些音频或视频」→ 点右边的「<b>启用数字版权管理 (DRM)</b>」，<br>
+      然后刷新本页。也可以进：设置 → 隐私、搜索和服务 → 内容设置 → 受保护内容 → 允许网站播放受保护内容。
+      <br><br>
+      <b>Firefox</b>：设置 → 隐私与安全 → 勾选「播放受保护内容（DRM）」。
+      <br><br>
+      改完按 <b>Ctrl + F5</b> 强制刷新，再跑一次上面的检测。<br>
+      都确认开启后仍然检测不到，才可能是系统真的缺少 Widevine / PlayReady 组件（精简版系统常见），
+      那时重装 Edge 或改用电脑版 Chrome 即可。
+    </div>
+  </details>
+
   <details open data-dev="android ios">
     <summary style="color:#ff8fa3">⚠️ 打开就弹「アップデート確認」，进不去 App</summary>
     <div class="faqbody">
@@ -1070,9 +1087,18 @@ function decide(){
     const wvLv = DRM.widevine==="HW" ? "Widevine L1"
                : (DRM.widevine==="SW"||DRM.widevine==="BASIC") ? "Widevine L3" : null;
     const pr = DRM.playready;
-    if(!wvLv && !pr)
-      return ["#e74c3c","浏览器不支持受保护播放",
-        "这个浏览器既没有 Widevine 也没有 PlayReady，FOD 的受保护内容一定播不了。\n请改用 Chrome 或 Edge。"];
+    if(!wvLv && !pr){
+      const ffx = /Firefox|FxiOS/.test(UA);
+      return ["#f1c40f","浏览器的 DRM（受保护内容）被关掉了",
+        "这不等于设备不支持 —— 绝大多数情况是浏览器把「受保护内容」禁用了。\n\n"+
+        "① 如果地址栏下方有灰色横条「您必须启用 DRM 才能播放…」，\n"+
+        "   点右边的「启用数字版权管理 (DRM)」，然后刷新本页；\n"+
+        (ffx ? "② Firefox：设置 → 隐私与安全 → 勾选「播放受保护内容（DRM）」；\n"
+             : "② Chrome / Edge：设置 → 隐私、搜索和服务 → 内容设置 → 受保护内容 → 允许；\n")+
+        "③ 改完按 Ctrl+F5 强制刷新，再跑一次检测。\n\n"+
+        "四项都确认开启后仍检测不到，才可能是系统缺少 Widevine / PlayReady 组件\n"+
+        "（常见于精简版系统），那时重装 Edge 或改用 App 即可。"];
+    }
     const parts=[]; if(pr) parts.push("PlayReady"); if(wvLv) parts.push(wvLv);
     const color = (pr || DRM.widevine==="HW") ? "#2ecc71" : "#f1c40f";
     const head = "环境正常（受保护播放：" + parts.join(" + ") + "）";
