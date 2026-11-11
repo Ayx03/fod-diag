@@ -1,7 +1,7 @@
 {
-  "versionCode": 27,
-  "versionName": "3.6",
-  "size": "42.8 KB",
+  "versionCode": 28,
+  "versionName": "3.7",
+  "size": "42.9 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "顶部改用 spinning 指示器（去掉抽搐的呼吸）；恢复 已检测 X/N 项 并显示当前在测什么；异常或超时会给出提示，不再一直转圈"
+  "notes": "加载指示器改蓝色转圈；顶部恢复 已检测 X/N 项 并显示当前检测阶段；网页修复卡在检测中的问题"
 }
