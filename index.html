@@ -700,7 +700,7 @@ function chromeIntent(){
 
 function verdict(color,title,desc){
   R.verdict={title:title,desc:desc};
-  $("#verdict").innerHTML='<div class="t"><span class="dot'+(PROG.on?' breathe':'')+'" style="background:'+color+'"></span>'+esc(title)+
+  $("verdict").innerHTML='<div class="t">'+(PROG.on?'<span class="spin"></span>':'<span class="dot" style="background:'+color+'"></span>')+esc(title)+
     '</div><div class="d">'+esc(desc)+'</div>';
   $("verdict").style.borderColor=color+"66";
   const _d=$("verdict").querySelector(".d");
