@@ -708,7 +708,7 @@ function verdict(color,title,desc){
   if(_d) _d.innerHTML=_d.innerHTML.replace(/下载下方\s*App|下方\s*App/g,
       '<a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">下载 App</a>');
   // 全部正常 = 环境没问题，这时候才是转化点（安卓是蓝色 #4a9eff，其他平台是绿色 #2ecc71）
-  if(color === "#2ecc71" || color === "#4a9eff"){
+  if(color === "#2ecc71" || color === "#4a9eff" || /Widevine L3/.test(title)){
     $("verdict").insertAdjacentHTML("beforeend",
       '<div style="margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);font-size:13px">'+
       '<a href="#shop" style="color:var(--blue);font-weight:700;text-decoration:underline">'+
