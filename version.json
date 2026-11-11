@@ -1,7 +1,7 @@
 {
-  "versionCode": 29,
-  "versionName": "3.8",
-  "size": "43.0 KB",
+  "versionCode": 30,
+  "versionName": "3.9",
+  "size": "43.1 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "没检测到 VPN 不再直接报错：先看出口地区。人已在日本或路由器级代理时正常判定；只有出口不在日本且无代理才提示开节点"
+  "notes": "结论卡片加状态圆点，边框随结果变色（绿/黄/红），与网页端对齐"
 }
