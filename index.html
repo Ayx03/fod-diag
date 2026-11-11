@@ -1069,7 +1069,13 @@ function decide(){
              "（华为 / 荣耀国内版 / 华为智选常见），那时只能换设备，或在电脑上用 Chrome、Edge 看。";
       return ["#f1c40f","浏览器报「不支持 Widevine」，先别急着换设备", txt];
     }
-    return ["#4a9eff","网络与地区都正常","安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
+    // 结论条也要写清 DRM 类型/等级，客户只截顶部时能看懂
+    const WVL = DRM.widevine==="HW" ? "Widevine L1（硬件级）"
+              : DRM.widevine==="SW" ? "Widevine L3（软件级）"
+              : "Widevine（无等级声明）";
+    const vColor = DRM.widevine==="HW" ? "#2ecc71" : "#f1c40f";
+    const vHead = "网络与地区正常（" + WVL + "）" + (DRM.widevine==="HW" ? "" : " · 高画质可能受限");
+    return [vColor, vHead, "安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
       (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
         :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
         :"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
