@@ -588,6 +588,13 @@ const DRM={widevine:null,fairplay:null,playready:null,hdcp:null};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const row=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
+const SPIN='<span class="spin"></span>';
+const pendRow=(k,sub,key)=>'<div class="row" data-k="'+(key||k)+'"><span class="k">'+k+
+  (sub?'<div style="font-size:11px;color:#6f7883">'+sub+'</div>':'')+'</span><span class="v">'+SPIN+'</span></div>';
+function upd(box,key,html){
+  const el=document.querySelector('#'+box+' [data-k="'+key+'"] .v');
+  if(el) el.innerHTML=html;
+}
 
 /* 复制文本脱敏：避免客户发到微信/QQ 时被风控 */
 function sanitize(s){
@@ -770,17 +777,10 @@ async function checkGeo(){
 }
 
 async function checkHosts(){
-  const box=$("hosts");
-  const holder={};   // 每条测完先显示，最后按固定顺序重排一次
   await Promise.all(HOSTS.map(async ([h,label])=>{
     const r=await reachable("https://"+h+"/?t="+Date.now(),9000);
     R.hosts[h]={ok:r.ok,ms:r.ms};
-    holder[h]={label:label,r:r};
-    box.innerHTML=HOSTS.filter(x=>holder[x[0]]).map(([hh])=>{
-      const item=holder[hh];
-      return row(hh+'<div style="font-size:11px;color:#6f7883">'+esc(item.label)+'</div>',
-        item.r.ok?'<span class="ok">通 '+item.r.ms+'ms</span>':'<span class="bad">不通</span>');
-    }).join("");
+    upd("hosts",h, r.ok?'<span class="ok">通 '+r.ms+'ms</span>':'<span class="bad">不通</span>');
   }));
 }
 
@@ -811,7 +811,8 @@ async function emeFairplay(){
 }
 async function checkDrm(){
   const box=$("drm"); box.innerHTML="";
-  const out={push:function(){ box.insertAdjacentHTML("beforeend", Array.prototype.join.call(arguments,"")); }};
+  const rows=[];
+  const out={push:function(){ rows.push(Array.prototype.join.call(arguments,"")); }};
   const drmRow=(k,v,hint)=>'<div class="row"><span class="k">'+k+
       '<div class="hint">'+hint+'</div></span><span class="v">'+v+'</span></div>';
   const KNOWN=IS_WIN||IS_MAC||IS_IOS||IS_ANDROID;
@@ -887,6 +888,17 @@ async function checkDrm(){
       }
     }catch(e){}
   }
+
+  // Windows + PlayReady 可用（Edge）时，Widevine 不是重点：排到最后并折叠
+  let wvIdx = rows.findIndex(r => r.indexOf('>Widevine<') > -1);
+  if (IS_WIN && DRM.playready && wvIdx >= 0) {
+    const wv = rows.splice(wvIdx, 1)[0];
+    rows.push('<details style="margin-top:8px">' +
+      '<summary style="cursor:pointer;font-size:12px;color:#8a94a0">' +
+      'Widevine 等级（Edge 播放 FOD 用不到，点开查看）</summary>' +
+      '<div style="margin-top:6px">' + wv + '</div></details>');
+  }
+  box.innerHTML = rows.join("");
 
   box.insertAdjacentHTML("beforeend",
     '<div style="font-size:11.5px;color:#6f7883;margin-top:8px;line-height:1.5">'+
@@ -1043,8 +1055,11 @@ function decide(){
 
 async function run(){
   verdict("#666","正在检测…","约需 10 秒");
-  $("net").innerHTML=$("geo").innerHTML=$("hosts").innerHTML=$("drm").innerHTML=
-    '<div class="row"><span class="k">检测中</span><span class="v"><span class="spin"></span></span></div>';
+  // 先把所有检测项列出来，右边转圈，测完一项填一项
+  $("net").innerHTML = IPAPIS.map(a=>pendRow(a.n)).join("") + pendRow("汇总");
+  $("geo").innerHTML = pendRow("FOD 认为您在");
+  $("hosts").innerHTML = HOSTS.map(([h,label])=>pendRow(h,label,h)).join("");
+  $("drm").innerHTML = pendRow("DRM 能力检测");
   R.hosts={};
   checkDev();
   await Promise.all([checkNet(),checkGeo(),checkHosts(),checkDrm()]);
