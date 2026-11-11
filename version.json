@@ -1,7 +1,7 @@
 {
-  "versionCode": 19,
-  "versionName": "2.8",
-  "size": "38.3 KB",
+  "versionCode": 20,
+  "versionName": "2.9",
+  "size": "38.9 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "修复结论条文字过大的问题（字号单位重复换算）；界面与网页统一为卡片式"
+  "notes": "域名连通补齐到 6 个（新增 DRM 授权 cenc.webstream.ne.jp、推荐接口 api.recommend），每个域名带功能说明"
 }
