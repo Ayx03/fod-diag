@@ -1,7 +1,7 @@
 {
-  "versionCode": 24,
-  "versionName": "3.3",
+  "versionCode": 25,
+  "versionName": "3.4",
   "size": "41.6 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "开局铺满所有分区；本地项（设备/App版本/Play服务/DRM）先出结果，网络项并行补齐；顶部呼吸灯 + 已检测 X/N 项"
+  "notes": "结论条写清 DRM：网页在 Windows 上区分 PlayReady / Widevine L1 / L3；App 全部通过时标注 Widevine L1"
 }

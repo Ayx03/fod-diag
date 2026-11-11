@@ -1066,10 +1066,25 @@ function decide(){
       ? ["#2ecc71","环境正常（FairPlay 可用）","出口在日本、地区判定通过、Safari 支持 FairPlay。\n但 iOS 浏览器会被强制跳转 App，实际播放请用 FOD App。"]
       : ["#f1c40f","网络正常，但未声明 FairPlay","请用 Safari 打开，或直接用 FOD App。"];
   }
-  if(IS_WIN)
-    return (DRM.widevine||DRM.playready)
-      ? ["#2ecc71","环境正常（受保护播放可用）","出口在日本、地区判定通过。\n720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。"]
-      : ["#e74c3c","浏览器不支持受保护播放","请改用 Chrome / Edge，并确认 Widevine 组件正常。"];
+  if(IS_WIN){
+    const wvLv = DRM.widevine==="HW" ? "Widevine L1"
+               : (DRM.widevine==="SW"||DRM.widevine==="BASIC") ? "Widevine L3" : null;
+    const pr = DRM.playready;
+    if(!wvLv && !pr)
+      return ["#e74c3c","浏览器不支持受保护播放",
+        "这个浏览器既没有 Widevine 也没有 PlayReady，FOD 的受保护内容一定播不了。\n请改用 Chrome 或 Edge。"];
+    const parts=[]; if(pr) parts.push("PlayReady"); if(wvLv) parts.push(wvLv);
+    const color = (pr || DRM.widevine==="HW") ? "#2ecc71" : "#f1c40f";
+    const head = "环境正常（受保护播放：" + parts.join(" + ") + "）";
+    let body = "出口在日本、地区判定通过。\n";
+    if(pr && wvLv)      body += "Edge 走 PlayReady，Chrome 走 " + wvLv + "，两边都能播受保护内容。\n";
+    else if(pr)         body += "当前浏览器只有 PlayReady：Edge 能正常播；用 Chrome 会提示不支持 Widevine。\n";
+    else                body += "当前浏览器只有 " + wvLv + "，建议用 Edge（多一条 PlayReady 通道，兼容性更好）。\n";
+    if(wvLv === "Widevine L3")
+      body += "Widevine 是软件级（L3），高画质可能受限、通常只能出标清；Edge 的 PlayReady 不受这个限制。\n";
+    body += "720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。";
+    return [color, head, body];
+  }
   if(IS_MAC)
     return DRM.fairplay
       ? ["#2ecc71","环境正常（FairPlay 可用）","Safari 支持 FairPlay，出口为日本。"]
