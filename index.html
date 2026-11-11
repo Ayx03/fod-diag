@@ -591,9 +591,32 @@ const row=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'
 const SPIN='<span class="spin"></span>';
 const pendRow=(k,sub,key)=>'<div class="row" data-k="'+(key||k)+'"><span class="k">'+k+
   (sub?'<div style="font-size:11px;color:#6f7883">'+sub+'</div>':'')+'</span><span class="v">'+SPIN+'</span></div>';
+const PROG={total:0,done:0,spin:0,timer:null,on:false};
+const SPINC=["◐","◓","◑","◒"];
+function progText(){
+  return SPINC[PROG.spin]+" 正在检测… "+PROG.done+" / "+PROG.total+" 项";
+}
+function progTick(){
+  if(!PROG.on) return;
+  PROG.spin=(PROG.spin+1)%SPINC.length;
+  verdict("#666",progText(),"本地项先出结果，网络项稍后填进来");
+}
+function progStart(){
+  PROG.total=document.querySelectorAll('.spin').length;
+  PROG.done=0; PROG.spin=0; PROG.on=true;
+  progTick();
+  clearInterval(PROG.timer);
+  PROG.timer=setInterval(progTick,200);
+}
+function progStop(){
+  PROG.on=false; clearInterval(PROG.timer);
+}
 function upd(box,key,html){
   const el=document.querySelector('#'+box+' [data-k="'+key+'"] .v');
-  if(el) el.innerHTML=html;
+  if(el){
+    if(el.querySelector('.spin')){ PROG.done++; progTick(); }
+    el.innerHTML=html;
+  }
 }
 
 /* 复制文本脱敏：避免客户发到微信/QQ 时被风控 */
@@ -1062,10 +1085,12 @@ async function run(){
   $("geo").innerHTML = pendRow("FOD 认为您在");
   $("hosts").innerHTML = HOSTS.map(([h,label])=>pendRow(h,label,h)).join("");
   $("drm").innerHTML = pendRow("DRM 能力检测");
+  progStart();
   R.hosts={};
   checkDev();
   await Promise.all([checkNet(),checkGeo(),checkHosts(),checkDrm()]);
   const [c,t,d]=decide();
+  progStop();
   verdict(c,t,d);
 }
 

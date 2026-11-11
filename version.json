@@ -1,7 +1,7 @@
 {
-  "versionCode": 22,
-  "versionName": "3.1",
-  "size": "40.7 KB",
+  "versionCode": 24,
+  "versionName": "3.3",
+  "size": "41.6 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "修复长文本把左侧标签挤掉的问题；运营商/ASN 只取日本来源；域名连通、地区判定与 IP 探测并发，整体更快"
+  "notes": "开局铺满所有分区；本地项（设备/App版本/Play服务/DRM）先出结果，网络项并行补齐；顶部呼吸灯 + 已检测 X/N 项"
 }
