@@ -1,7 +1,7 @@
 {
-  "versionCode": 21,
-  "versionName": "3.0",
-  "size": "40.3 KB",
+  "versionCode": 22,
+  "versionName": "3.1",
+  "size": "40.7 KB",
   "url": "https://g.imayx.top/fod-diag/fod-diag.apk",
-  "notes": "检测开始先把所有项目列出来，右侧转圈，出结果逐项填入；域名连通补齐 6 个并带说明"
+  "notes": "修复长文本把左侧标签挤掉的问题；运营商/ASN 只取日本来源；域名连通、地区判定与 IP 探测并发，整体更快"
 }

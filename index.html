@@ -719,47 +719,48 @@ async function oneApi(api){
   }catch(e){ return {src:api.n,err:e.name==="AbortError"?"超时":(e.message||"失败")}; }
 }
 async function checkNet(){
-  const rs=await Promise.all(IPAPIS.map(oneApi));
+  const rs=[];
+  await Promise.all(IPAPIS.map(async a=>{
+    const r=await oneApi(a);
+    rs.push(r);
+    const cls = r.cc==="JP" ? "ok" : (r.cc==="CN"||r.cc==="HK") ? "bad" : "";
+    upd("net", a.n, r.ip
+      ? '<span class="'+cls+'">'+esc(r.ip)+" "+esc(r.country||r.cc)+" "+esc(r.city||"")+"</span>"
+      : '<span class="dim">未取到 · '+esc(r.err||"失败")+'</span>');
+  }));
   const good=rs.filter(r=>r.ip);
   if(!good.length){
     R.net={ok:false};
-    $("net").innerHTML=row("状态",'<span class="bad">全部来源失败</span>')+
-      rs.map(r=>row(r.src,'<span class="dim">'+esc(r.err||"?")+'</span>')).join("");
+    upd("net","汇总",'<span class="bad">全部来源失败</span>');
+    upd("net","运营商","—"); upd("net","ASN","—");
     return;
   }
-  R.net=good[0];
-  R.net.ok=true;
-  const ccs=[...new Set(good.map(r=>r.cc).filter(Boolean))];
-  let html=good.map(r=>{
-    const cls=r.cc==="JP"?"ok":(r.cc==="CN"||r.cc==="HK")?"bad":"";
-    return row(r.src,'<span class="'+cls+'">'+esc(r.ip)+" "+esc(r.country||r.cc)+" "+esc(r.city||"")+"</span>");
-  }).join("");
-  // 失败的源也列出来，别让客户以为被藏了
-  rs.filter(r=>!r.ip).forEach(r=>{
-    html+=row(r.src,'<span class="dim">未取到 · '+esc(r.err||"失败")+'</span>');
-  });
-  // 非日本 / 多源不一致时给出解释（分流规则导致的国内出口是正常现象）
-  if(ccs.length>1 || (ccs[0] && ccs[0]!=="JP")){
-    html+=row("说明",'<span class="dim" style="line-height:1.6">部分来源显示国内 / 非日本地址属<b>正常</b>：'+
-      '分流规则下国内 IP 接口走的是直连，返回的是您本机出口。<br>'+
-      '判断只看「FOD 地区判定」和域名连通 —— FOD 能正常登录、能看就不用管。</span>');
-  }
-  html+=ccs.length>1
-    ? row("汇总",'<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>')
-    : row("汇总",'<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length+" 源一致 · "+esc(ccs[0]||"?")+'</span>');
-  // 同一家运营商的写法有差异（IKUUU NETWORK LTD / Ikuuu Network），去掉被包含的短写法
-  let isps=[...new Set(good.map(r=>r.isp).filter(Boolean))];
+  R.net=good[0]; R.net.ok=true;
+  // 运营商/ASN 只统计日本来源，避免混进国内直连的出口
+  const jp=good.filter(r=>r.cc==="JP");
+  const base=jp.length?jp:good;
+  const ccs=[...new Set(base.map(r=>r.cc).filter(Boolean))];
+  upd("net","汇总", ccs.length>1
+    ? '<span class="warn">来源不一致 '+esc(ccs.join("/"))+'</span>'
+    : '<span class="'+(ccs[0]==="JP"?"ok":"bad")+'">'+good.length+"/"+rs.length
+      +" 源一致 · "+esc(ccs[0]||"?")+'</span>');
+  let isps=[...new Set(base.map(r=>r.isp).filter(Boolean))];
   isps=isps.filter(x=>!isps.some(y=>y!==x && y.toLowerCase().startsWith(x.toLowerCase())));
-  const asns=[...new Set(good.map(r=>r.asn).filter(Boolean))];
-  if(isps.length){
-    html+=row("运营商", esc(isps.slice(0,2).join(" / "))+
-      (isps.length>2?' <span class="dim">+'+((isps.length-2))+'</span>':''));
+  const asns=[...new Set(base.map(r=>r.asn).filter(Boolean))];
+  upd("net","运营商", isps.length
+    ? esc(isps.slice(0,2).join(" / "))+(isps.length>2?' <span class="dim">+'+((isps.length-2))+'</span>':'')
+    : "—");
+  upd("net","ASN", asns.length
+    ? esc(asns.slice(0,2).join(" / "))+(asns.length>2?' <span class="dim">+'+((asns.length-2))+'</span>':'')
+    : "—");
+  // 国内出口解释（分流规则下属正常）
+  if(ccs.length>1 || (ccs[0] && ccs[0]!=="JP")){
+    const anchorEl=document.querySelector('#net [data-k="ASN"]');
+    if(anchorEl) anchorEl.insertAdjacentHTML("afterend",
+      row("说明",'<span class="dim" style="line-height:1.6">部分来源显示国内 / 非日本地址属<b>正常</b>：'+
+        '分流规则下国内 IP 接口走的是直连，返回的是您本机出口。<br>'+
+        '判断只看「FOD 地区判定」和域名连通 —— 能正常登录、能看就不用管。</span>'));
   }
-  if(asns.length){
-    html+=row("ASN", esc(asns.slice(0,2).join(" / "))+
-      (asns.length>2?' <span class="dim">+'+((asns.length-2))+'</span>':''));
-  }
-  $("net").innerHTML=html;
 }
 
 async function checkGeo(){
@@ -1056,7 +1057,8 @@ function decide(){
 async function run(){
   verdict("#666","正在检测…","约需 10 秒");
   // 先把所有检测项列出来，右边转圈，测完一项填一项
-  $("net").innerHTML = IPAPIS.map(a=>pendRow(a.n)).join("") + pendRow("汇总");
+  $("net").innerHTML = IPAPIS.map(a=>pendRow(a.n)).join("")
+      + pendRow("汇总") + pendRow("运营商") + pendRow("ASN");
   $("geo").innerHTML = pendRow("FOD 认为您在");
   $("hosts").innerHTML = HOSTS.map(([h,label])=>pendRow(h,label,h)).join("");
   $("drm").innerHTML = pendRow("DRM 能力检测");
