@@ -1,7 +1,7 @@
 {
-  "versionCode": 31,
-  "versionName": "4.0",
-  "size": "43.6 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.0.apk",
-  "notes": "新增 HTTP 状态码检测：403 直接判定为该节点 IP 被 FOD 拒绝，不再把 403/404 当成正常连通"
+  "versionCode": 32,
+  "versionName": "4.1",
+  "size": "43.7 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.1.apk",
+  "notes": "修正判定顺序：先看 DRM 能不能播，再看能不能自己订阅。无 Google 服务的手机不再误报「订阅一定失败」，改为「可以正常观看，订阅需代开」"
 }
