@@ -86,6 +86,20 @@
          background:#fff;color:#c9184a;border-radius:5px;padding:0 4px;margin-left:3px;vertical-align:2px}
   .choff{opacity:.82}
   .poff{opacity:.45;cursor:not-allowed}
+  /* 深链定位 / 检测建议 */
+  .dl-flash{animation:dlflash 2.8s ease-out 1}
+  @keyframes dlflash{
+    0%{background:#3b82f638;box-shadow:inset 3px 0 0 #3b82f6}
+    70%{background:#3b82f610;box-shadow:inset 3px 0 0 #3b82f6}
+    100%{background:transparent;box-shadow:none}
+  }
+  details.adv{background:#f1c40f0d;box-shadow:inset 3px 0 0 #f1c40f}
+  #advice{border:1px solid #3b82f666}
+  #advice .ai{display:block;text-decoration:none;color:var(--fg);background:#232830;
+    border:1px solid #2a2f37;border-left:3px solid #3b82f6;border-radius:10px;
+    padding:10px 12px;margin-top:8px;cursor:pointer}
+  #advice .ai b{display:block;font-size:13.5px;color:#7fd1ff;font-weight:600}
+  #advice .ai span{display:block;font-size:11.5px;color:#8b95a1;margin-top:3px}
   #modal{position:fixed;inset:0;background:#000c;z-index:99;display:none;align-items:center;justify-content:center;padding:20px}
   #modal .box{background:#1a1d22;border:1px solid #2a2f37;border-radius:14px;padding:18px;max-width:420px;width:100%}
   #modal .box h3{margin:0 0 10px;font-size:16px}
@@ -154,6 +168,12 @@
   </details>
 </div>
 
+<div class="card" id="advice" style="display:none">
+  <h2>👉 按你的检测结果，先看这几条</h2>
+  <div id="adviceList"></div>
+  <div style="font-size:11.5px;color:#8b95a1;margin-top:10px">点任意一条，会直接展开并跳到对应说明。</div>
+</div>
+
 <div class="card" id="faq">
   <h2>常见问题速查</h2>
   <div id="faqdev" style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px">
@@ -166,7 +186,7 @@
   </div>
   <div id="faqnote" style="font-size:11.5px;color:#6f7883;margin:-4px 0 8px"></div>
 
-  <details data-dev="win mac">
+  <details id="drm" data-dev="win mac">
     <summary style="color:#ffd166">⚠️ 提示「您必须启用 DRM」/ 浏览器不支持受保护播放</summary>
     <div class="faqbody">
       这不等于设备不支持 —— 绝大多数情况是浏览器把「受保护内容（DRM）」关掉了。
@@ -183,7 +203,7 @@
     </div>
   </details>
 
-  <details open data-dev="android ios">
+  <details id="update" open data-dev="android ios">
     <summary style="color:#ff8fa3">⚠️ 打开就弹「アップデート確認」，进不去 App</summary>
     <div class="faqbody">
       打开 App 后只弹一个框，<b>没有「稍后」按钮</b>，点不掉：<br>
@@ -203,7 +223,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="register" data-dev="all">
     <summary style="color:#ff8fa3">⚠️ 别把「登録」当成登录（最常见）</summary>
     <div class="faqbody">
       <b>ログイン</b> ＝ 登录<b>已有</b>账号<br>
@@ -215,7 +235,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="emailused" data-dev="all">
     <summary>提示「メールアドレスはすでに登録されています」（邮箱已注册）</summary>
     <div class="faqbody">
       在<b>注册页</b>填好邮箱、点「<b>認証コードを送信</b>」时，顶部会弹出：<br>
@@ -229,7 +249,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="codeinvalid" data-dev="all">
     <summary>提示「有効な認証コードではありません」（验证码无效）</summary>
     <div class="faqbody">
       意思是：<b>验证码不对</b>，让重新输入<b>4 位半角数字</b>。<br><br>
@@ -243,7 +263,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="codecorrect" data-dev="all">
     <summary>验证码是对的，却一直提示无效</summary>
     <div class="faqbody">
       验证码是<b>绑在账号上的</b>，不是绑在某台设备上 —— <b>谁输入都可以</b>。<br>
@@ -278,7 +298,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="qqmail" data-dev="all">
     <summary>QQ / 126 邮箱收不到验证码或重置邮件</summary>
     <div class="faqbody">
       常见现象：<b>明明没注册过，却提示「已注册」</b>；或者点「パスワードをお忘れの方」后
@@ -294,7 +314,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="cancelmeaning" data-dev="all">
     <summary>「解約手続きへ」和「再開手続きへ」有什么区别</summary>
     <div class="faqbody">
       这两个是<b>不同状态</b>下才出现的按钮，看当前显示哪个，就知道自己走到哪一步了：<br><br>
@@ -311,7 +331,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="aftercancel" data-dev="all">
     <summary>「解約」之后还能用吗？是不是立刻失效</summary>
     <div class="faqbody">
       <b>解約 ＝ 取消自动续费</b>，不是立刻停会员。<br>
@@ -329,7 +349,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="course" data-dev="all">
     <summary>弹出「この作品はFODプレミアム各コースでご視聴いただけます」</summary>
     <div class="faqbody">
       这是<b>付费墙</b>，意思是：这个作品（或这一集）需要 <b>FOD プレミアム</b> 会员才能看。<br><br>
@@ -344,7 +364,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="err300" data-dev="all">
     <summary>跳到「エラー」页 / 提示不在日本国内（err=300）</summary>
     <div class="faqbody">
       这是<b>地区判定没过</b>（页面地址一般是 <span class="kbd">/error?err=300</span>）。<br><br>
@@ -359,7 +379,7 @@
     </div>
   </details>
 
-  <details data-dev="android ios">
+  <details id="cleardata" data-dev="android ios">
     <summary>清除数据在哪？清完要重新登录吗</summary>
     <div class="faqbody">
       安卓：设置 → 应用 → 管理应用 → 搜「FOD」→ 存储 → <b>清除数据</b><br>
@@ -368,7 +388,7 @@
     </div>
   </details>
 
-  <details data-dev="win">
+  <details id="clearweb" data-dev="win">
     <summary>电脑版 Edge 怎么清除 FOD 网站数据（Windows / macOS 通用）</summary>
     <div class="faqbody">
       ① 打开 FOD 页面（<span class="kbd">fod.fujitv.co.jp</span>），点地址栏<b>最左边的锁图标</b> 🔒<br>
@@ -386,7 +406,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="ipfail" data-dev="all">
     <summary>为什么有的 IP 源失败，或者显示的是国内地址</summary>
     <div class="faqbody">
       <b>① 显示「未取到 / 超时」</b><br>
@@ -404,7 +424,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="logout" data-dev="all">
     <summary>App 里怎么退出账号（换号必看）</summary>
     <div class="faqbody">
       点 App 右下角「<b>マイページ</b>」，<b>默认就停在最上面</b>，「<b>会員情報</b>」在首屏就能看到，它下面依次是：<br>
@@ -422,7 +442,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="search" data-dev="all">
     <summary>搜不到「杀旅」——中文搜不到，要用日文原名</summary>
     <div class="faqbody">
       FOD 的搜索框只认<b>日文原名</b>，用中文「杀旅」是搜不出来的。<br>
@@ -433,7 +453,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="wechat" data-dev="all">
     <summary>在微信里打开，检测结果是「中国」</summary>
     <div class="faqbody">
       微信内置浏览器经常绕开代理（不走您的节点），所以 IP 显示中国是正常的。<br>
@@ -441,7 +461,7 @@
     </div>
   </details>
 
-  <details data-dev="android">
+  <details id="redirect" data-dev="android">
     <summary>安卓浏览器一打开就跳到 FOD App</summary>
     <div class="faqbody">
       浏览器菜单里开启「<b>桌面版网站 / PC 版网站</b>」，一般就能在网页里直接播放；
@@ -449,7 +469,7 @@
     </div>
   </details>
 
-  <details data-dev="ios">
+  <details id="ios" data-dev="ios">
     <summary>iPhone / iPad 装不上或打不开</summary>
     <div class="faqbody">
       FOD App 要求 <b>iOS 15.0+</b>（iPhone 6 最高 iOS 12，无法使用）。<br>
@@ -457,14 +477,14 @@
     </div>
   </details>
 
-  <details data-dev="android">
+  <details id="playstore" data-dev="android">
     <summary>安卓在 Google Play 下不了 / 提示所在地区不可用</summary>
     <div class="faqbody">
       FOD App 只在<b>日本区 Google Play</b> 上架，需要日区 Google 账号；更新也一样。
     </div>
   </details>
 
-  <details data-dev="android">
+  <details id="huawei" data-dev="android">
     <summary>华为 / 荣耀（国内版）/ 华为智选 手机看不了</summary>
     <div class="faqbody">
       这类设备没有 <b>Google 服务框架（GMS）</b>，系统里缺少 <b>Widevine</b> 版权模块。<br><br>
@@ -480,7 +500,7 @@
     </div>
   </details>
 
-  <details data-dev="android">
+  <details id="gms" data-dev="android">
     <summary>手机支持 GMS，但没登录 Google 账号，会影响吗</summary>
     <div class="faqbody">
       <b>不影响 Widevine 本身。</b>Widevine 是系统里的版权模块，
@@ -494,7 +514,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="playerror" data-dev="all">
     <summary>检测都正常，但 App 里播放还是报错</summary>
     <div class="faqbody">
       本页测的是<b>域名和地区</b>，App 播放还多依赖两个东西：<br>
@@ -515,7 +535,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="blackshot" data-dev="all">
     <summary>截图 / 录屏出来是黑屏</summary>
     <div class="faqbody">
       这是 <b>DRM 版权保护</b>，<b>正常现象</b>，不是设备坏了、也不是没装好。<br><br>
@@ -527,7 +547,7 @@
     </div>
   </details>
 
-  <details data-dev="all">
+  <details id="quality" data-dev="all">
     <summary>能播，但画质差 / 黑屏 / 卡顿</summary>
     <div class="faqbody">
       <b>① 先手动调画质</b>（最常见）：播放页点右上角<b>齿轮 ⚙</b> 图标 →「<b>画質</b>」→
@@ -1213,6 +1233,7 @@ async function run(){
   const [c,t,d]=decide();
   progStop();
   verdict(c,t,d);
+  renderAdvice();
   setCopyReady(true);
 }
 
@@ -1323,6 +1344,80 @@ document.addEventListener("click", e => {
   el.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
+// ---------- FAQ 深链：?q=err300 / #err300 直接展开并高亮 ----------
+const FAQ_ALIAS = {
+  "300":"err300", "err300":"err300", "error":"err300",
+  "clear":"cleardata", "cleardata":"cleardata", "qingchu":"cleardata",
+  "logout":"logout", "tuichu":"logout",
+  "drm":"drm", "update":"update", "register":"register",
+  "code":"codeinvalid", "email":"emailused", "redirect":"redirect",
+  "huawei":"huawei", "black":"blackshot", "quality":"quality"
+};
+
+function openFaq(id){
+  const el = document.getElementById(id);
+  if(!el) return false;
+  // 被设备筛选隐藏时，先切回「全部」，否则跳过去是一片空白
+  if(el.style.display === "none"){ faqSel = "all"; faqApply("all"); }
+  if(el.tagName === "DETAILS") el.open = true;
+  el.classList.remove("dl-flash");
+  void el.offsetWidth;                       // 强制回流，让动画可以重复播放
+  el.classList.add("dl-flash");
+  setTimeout(()=>el.classList.remove("dl-flash"), 2900);
+  el.scrollIntoView({behavior:"smooth", block:"center"});
+  return true;
+}
+
+function resolveDeepLink(){
+  const qp = new URLSearchParams(location.search);
+  const raw  = (qp.get("q") || qp.get("faq") || "").trim().toLowerCase();
+  const hash = decodeURIComponent(location.hash.replace(/^#/, "")).trim().toLowerCase();
+  const key  = raw || hash;
+  if(!key) return;
+  const id = FAQ_ALIAS[key] || key;
+  openFaq(id);
+}
+
+document.addEventListener("click", e=>{
+  const a = e.target.closest && e.target.closest("[data-faqjump]");
+  if(!a) return;
+  e.preventDefault();
+  openFaq(a.getAttribute("data-faqjump"));
+});
+window.addEventListener("hashchange", resolveDeepLink);
+
+// ---------- 检测结果驱动排障建议 ----------
+function adviceFor(){
+  const out=[];
+  const nonJP = (R.geo && R.geo.ok && R.geo.result === false) ||
+                (R.net && R.net.ok && R.net.cc !== "JP");
+  if(nonJP){
+    out.push({id:"err300",    t:"换日本节点后还报错？看 err=300 的处理",      why:"你的出口判定不在日本"});
+    out.push({id:"cleardata", t:"清除 FOD 网站数据（换过节点一定要清）",      why:"站点会记住上一次的地区状态"});
+  }
+  const dead = Object.keys(R.hosts || {}).filter(h => !R.hosts[h].ok);
+  if(dead.length)
+    out.push({id:"ipfail", t:"为什么有的 IP 源失败、或显示国内地址", why:dead.length+" 个 FOD 域名不通，通常是节点问题"});
+  const s = drmState();
+  if(s && s.lv !== "ok")
+    out.push({id:"drm", t:"提示「必须启用 DRM」怎么办", why:"这台设备的受保护播放有限制"});
+  if(IS_ANDROID || IS_IOS)
+    out.push({id:"redirect", t:"浏览器一打开就跳到 FOD App", why:"手机上只能用 App 播放"});
+  return out;
+}
+
+function renderAdvice(){
+  const box=$("advice"), wrap=$("adviceList");
+  if(!box || !wrap) return;
+  document.querySelectorAll("#faq details.adv").forEach(d=>d.classList.remove("adv"));
+  const list = adviceFor();
+  if(!list.length){ box.style.display="none"; wrap.innerHTML=""; return; }
+  wrap.innerHTML = list.map(x=>
+    '<a class="ai" data-faqjump="'+x.id+'"><b>'+x.t+'</b><span>'+x.why+'</span></a>').join("");
+  list.forEach(x=>{ const el=document.getElementById(x.id); if(el) el.classList.add("adv"); });
+  box.style.display="";
+}
+
 // 页内跳转到商城（环境正常时的引流链接）
 document.addEventListener("click", e => {
   const a = e.target.closest && e.target.closest('a[href="#shop"]');
@@ -1377,6 +1472,9 @@ if(qp.has("member")||qp.has("buy")||qp.has("shop")){
   },400);
   document.addEventListener("diag:done",()=>{tries=0;}); // 检测完成后重新校准（布局会变高）
 }
+
+// 深链入口：?q=err300 / #err300 —— 等首屏布局稳定后再跳
+setTimeout(resolveDeepLink, 260);
 </script>
 </body>
 </html>
