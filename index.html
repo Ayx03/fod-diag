@@ -1064,19 +1064,9 @@ function checkDev(){
   }
 }
 
-function decide(){
-  const dead=Object.entries(R.hosts).filter(([h,v])=>!v.ok).map(([h])=>h);
-  if(R.geo&&R.geo.ok===false)
-    return ["#e74c3c","连不上 FOD 地区判定服务器","网络能出去，但访问不到 geo.fod.j-stream.jp。\n换一个节点再试。"];
-  if(R.geo&&R.geo.result===false)
-    return ["#f1c40f","当前出口不在日本","FOD 判定您的 IP 不在日本，会跳到 /error?err=300 错误页。\n请切换日本节点后重新检测，并清除本站点 Cookie/缓存。"];
-  if(dead.length&&dead.length<HOSTS.length)
-    return ["#e74c3c","部分 FOD 域名不通","不通："+dead.join("、")+"\n典型的「节点能连、但对目标域名握手被丢」，换节点。"];
-  if(!R.net||!R.net.ok)
-    return ["#f1c40f","拿不到出口 IP","可能代理/网络异常，也可能所有 IP 查询接口都被限流。"];
-  if(R.net.cc!=="JP")
-    return ["#f1c40f","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。"];
-
+// ── 结论：把所有测出来的问题一次性列全，而不是只报第一个 ──────────────
+function drmState(){
+  // 平台相关的 DRM 结论；返回 {lv:"ok"|"warn"|"bad", t, d}
   if(IS_ANDROID){
     if(DRM.widevine===null){
       const ff=/Firefox|FxiOS/.test(UA);
@@ -1086,29 +1076,29 @@ function decide(){
       let txt = ff ? "Firefox 可能关闭了 DRM 播放：about:config 里把 media.eme.enabled 设为 true。\n" : "";
       txt += "先按这个顺序试，很多是浏览器设置问题，不是设备：\n";
       steps.forEach((s,i)=>{ txt += (steps.length>1 ? ((i+1) + ". ") : "") + s + "；\n"; });
-      txt += "都还是报错 / 黑屏，才是设备真的没有 Widevine 模块\n"+
-             "（华为 / 荣耀国内版 / 华为智选常见），那时只能换设备，或在电脑上用 Chrome、Edge 看。";
-      return ["#f1c40f","浏览器报「不支持 Widevine」，先别急着换设备", txt];
+      txt += "都还是报错 / 黑屏，才是设备真的没有 Widevine 模块\n（华为 / 荣耀国内版 / 华为智选常见），那时只能换设备，或在电脑上用 Chrome、Edge 看。";
+      return {lv:"warn", t:"浏览器报「不支持 Widevine」，先别急着换设备", d:txt};
     }
-    // 结论条也要写清 DRM 类型/等级，客户只截顶部时能看懂
     const WVL = DRM.widevine==="HW" ? "Widevine L1（硬件级）"
               : DRM.widevine==="SW" ? "Widevine L3（软件级）"
               : "Widevine（无等级声明）";
-    const vColor = DRM.widevine==="HW" ? "#2ecc71" : "#f1c40f";
-    const vHead = "网络与地区正常（" + WVL + "）" + (DRM.widevine==="HW" ? "" : " · 高画质可能受限");
-    return [vColor, vHead, "安卓浏览器可能被强制跳转 FOD App。\n可在菜单里开启「桌面版网站」试试，部分机型可行；不行就用 App。\n"+
-      (webviewCheck().yes?"⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。\n"
-        :IS_CHROME?"DRM 以官方 Chrome 的结论为准（最准）。\n"
-        :"⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。\n")+
-      "GMS、内购这些网页查不到，请下载下方 App。"];
+    const note = webviewCheck().yes
+      ? "⚠️ 套壳浏览器会把 DRM 等级报低（L1 可能显示成 L3），建议用官方 Chrome 或 App 复测。"
+      : IS_CHROME ? "DRM 以官方 Chrome 的结论为准（最准）。"
+      : "⚠️ 安卓上非 Chrome 的 DRM 结论常常偏低，建议换 Chrome 复测。";
+    return (DRM.widevine==="HW")
+      ? {lv:"ok",   t:"DRM："+WVL, d:"支持受保护播放，可高画质。\n"+note}
+      : {lv:"warn", t:"DRM 只有 "+WVL+"（高画质可能受限）",
+         d:"软件级 DRM 通常只能出标清，偶尔会直接报错。\n这是设备出厂认证决定的，改不了；要稳定看高清请换设备，或用电脑 Chrome / Edge 看。\n"+note};
   }
   if(IS_IOS){
     const iosv=(UA.match(/OS (\d+)[_.](\d+)/)||[])[1];
     if(iosv&&+iosv<15)
-      return ["#e74c3c","系统版本过低，无法使用 FOD","FOD App 要求 iOS 15.0 及以上，这台设备是 iOS "+iosv+"。\niPhone 6 最高只到 iOS 12，属于彻底不支持，只能换设备。"];
+      return {lv:"bad", t:"系统版本过低，无法使用 FOD",
+              d:"FOD App 要求 iOS 15.0 及以上，这台设备是 iOS "+iosv+"。\niPhone 6 最高只到 iOS 12，属于彻底不支持，只能换设备。"};
     return DRM.fairplay
-      ? ["#2ecc71","环境正常（FairPlay 可用）","出口在日本、地区判定通过、Safari 支持 FairPlay。\n但 iOS 浏览器会被强制跳转 App，实际播放请用 FOD App。"]
-      : ["#f1c40f","网络正常，但未声明 FairPlay","请用 Safari 打开，或直接用 FOD App。"];
+      ? {lv:"ok",   t:"DRM：FairPlay 可用", d:"Safari 支持 FairPlay，可正常播放。"}
+      : {lv:"warn", t:"未声明 FairPlay", d:"请用 Safari 打开，或直接用 FOD App。"};
   }
   if(IS_WIN){
     const wvLv = DRM.widevine==="HW" ? "Widevine L1"
@@ -1116,33 +1106,77 @@ function decide(){
     const pr = DRM.playready;
     if(!wvLv && !pr){
       const ffx = /Firefox|FxiOS/.test(UA);
-      return ["#f1c40f","浏览器的 DRM（受保护内容）被关掉了",
-        "这不等于设备不支持 —— 绝大多数情况是浏览器把「受保护内容」禁用了。\n\n"+
-        "① 如果地址栏下方有灰色横条「您必须启用 DRM 才能播放…」，\n"+
-        "   点右边的「启用数字版权管理 (DRM)」，然后刷新本页；\n"+
-        (ffx ? "② Firefox：设置 → 隐私与安全 → 勾选「播放受保护内容（DRM）」；\n"
-             : "② Chrome / Edge：设置 → 隐私、搜索和服务 → 内容设置 → 受保护内容 → 允许；\n")+
-        "③ 改完按 Ctrl+F5 强制刷新，再跑一次检测。\n\n"+
-        "四项都确认开启后仍检测不到，才可能是系统缺少 Widevine / PlayReady 组件\n"+
-        "（常见于精简版系统），那时重装 Edge 或改用 App 即可。"];
+      return {lv:"warn", t:"浏览器的 DRM（受保护内容）被关掉了",
+        d:"这不等于设备不支持 —— 绝大多数情况是浏览器把「受保护内容」禁用了。\n\n"+
+          "① 如果地址栏下方有灰色横条「您必须启用 DRM 才能播放…」，\n"+
+          "   点右边的「启用数字版权管理 (DRM)」，然后刷新本页；\n"+
+          (ffx ? "② Firefox：设置 → 隐私与安全 → 勾选「播放受保护内容（DRM）」；\n"
+               : "② Chrome / Edge：设置 → 隐私、搜索和服务 → 内容设置 → 受保护内容 → 允许；\n")+
+          "③ 改完按 Ctrl+F5 强制刷新，再跑一次检测。\n\n"+
+          "四项都确认开启后仍检测不到，才可能是系统缺少 Widevine / PlayReady 组件\n（常见于精简版系统），那时重装 Edge 或改用 App 即可。"};
     }
     const parts=[]; if(pr) parts.push("PlayReady"); if(wvLv) parts.push(wvLv);
-    const color = (pr || DRM.widevine==="HW") ? "#2ecc71" : "#f1c40f";
-    const head = "环境正常（受保护播放：" + parts.join(" + ") + "）";
-    let body = "出口在日本、地区判定通过。\n";
-    if(pr && wvLv)      body += "Edge 走 PlayReady，Chrome 走 " + wvLv + "，两边都能播受保护内容。\n";
-    else if(pr)         body += "当前浏览器只有 PlayReady：Edge 能正常播；用 Chrome 会提示不支持 Widevine。\n";
-    else                body += "当前浏览器只有 " + wvLv + "，建议用 Edge（多一条 PlayReady 通道，兼容性更好）。\n";
-    if(wvLv === "Widevine L3")
-      body += "Widevine 是软件级（L3），高画质可能受限、通常只能出标清；Edge 的 PlayReady 不受这个限制。\n";
-    body += "720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。";
-    return [color, head, body];
+    let d = (pr&&wvLv) ? "Edge 走 PlayReady，Chrome 走 "+wvLv+"，两边都能播受保护内容。\n"
+          : pr ? "当前浏览器只有 PlayReady：Edge 能正常播；用 Chrome 会提示不支持 Widevine。\n"
+          : "当前浏览器只有 "+wvLv+"，建议用 Edge（多一条 PlayReady 通道，兼容性更好）。\n";
+    if(wvLv==="Widevine L3")
+      d += "Widevine 是软件级（L3），高画质可能受限、通常只能出标清；Edge 的 PlayReady 不受这个限制。\n";
+    d += "720p / 1080p 一般不需要 HDCP 2.2，只有 4K 或外接屏黑屏时才需要管它。";
+    return {lv:(pr||DRM.widevine==="HW")?"ok":"warn", t:"受保护播放："+parts.join(" + "), d:d};
   }
   if(IS_MAC)
     return DRM.fairplay
-      ? ["#2ecc71","环境正常（FairPlay 可用）","Safari 支持 FairPlay，出口为日本。"]
-      : ["#f1c40f","建议使用 Safari","macOS 上 FOD 依赖 FairPlay，Chrome 常无法播放受保护内容。"];
-  return ["#2ecc71","网络与地区检查通过","当前平台判断有限，有问题请截图明细。"];
+      ? {lv:"ok",   t:"DRM：FairPlay 可用", d:"Safari 支持 FairPlay。"}
+      : {lv:"warn", t:"建议使用 Safari", d:"macOS 上 FOD 依赖 FairPlay，Chrome 常无法播放受保护内容。"};
+  return {lv:"ok", t:"DRM：当前平台无法判断", d:"平台的 DRM 情况测不准，有问题请截图明细联系我们。"};
+}
+
+function collectIssues(){
+  const out=[];
+  const add=(lv,t,d)=>out.push({lv:lv,t:t,d:d});
+
+  // ① 域名连通性 —— 连不上 FOD，其它都无从谈起
+  const dead=Object.entries(R.hosts).filter(([h,v])=>!v.ok).map(([h])=>h);
+  if(dead.length)
+    add("bad","FOD 域名不通（"+dead.length+"/"+HOSTS.length+"）："+dead.join("、"),
+        "典型的「节点能连、但对目标域名握手被丢」，换一个节点再测。");
+
+  // ② DRM —— 这台设备到底播不播得了
+  const s=drmState();
+  if(s.lv!=="ok") add(s.lv, s.t, s.d);
+
+  // ③ 地区判定
+  if(R.geo&&R.geo.ok===false)
+    add("bad","连不上 FOD 地区判定服务器",
+        "网络能出去，但访问不到 geo.fod.j-stream.jp，换个节点再试。");
+  else if(R.geo&&R.geo.result===false)
+    add("bad","FOD 判定您的 IP 不在日本",
+        "会跳到 /error?err=300 错误页。请切日本节点后重测，并清除本站 Cookie / 缓存。");
+
+  // ④ 出口 IP
+  if(!R.net||!R.net.ok)
+    add("warn","拿不到出口 IP","可能代理/网络异常，也可能所有 IP 查询接口都被限流。");
+  else if(R.net.cc!=="JP")
+    add("warn","出口不是日本","当前："+(R.net.country||R.net.cc)+"。请切换到日本节点。");
+
+  return out;
+}
+
+function decide(){
+  const list=collectIssues();
+  const s=drmState();
+  if(!list.length){
+    const tail = (IS_ANDROID||IS_IOS)
+      ? "\n"+(IS_ANDROID?"安卓":"iOS")+" 浏览器会被强制跳转 FOD App，实际播放请用 App。"
+      : "";
+    return ["#2ecc71","没发现问题 · "+s.t,
+      "出口在日本、地区判定通过、FOD 域名全部可达。\n"+s.d+tail];
+  }
+  const color = list.some(x=>x.lv==="bad") ? "#e74c3c" : "#f1c40f";
+  const bad = list.filter(x=>x.lv==="bad").length;
+  const head = "发现 "+list.length+" 个问题"+(bad?"（其中 "+bad+" 个直接导致看不了）":"");
+  const body = list.map((x,i)=>(i+1)+". "+x.t+"\n   "+x.d.replace(/\n/g,"\n   ")).join("\n\n");
+  return [color, head, body];
 }
 
 async function run(){
