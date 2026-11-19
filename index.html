@@ -1345,6 +1345,7 @@ document.addEventListener("click", e => {
 });
 
 // ---------- FAQ 深链：?q=err300 / #err300 直接展开并高亮 ----------
+let pendingFaqId = null;   // 深链目标，检测结束后再校准一次滚动位置
 const FAQ_ALIAS = {
   "300":"err300", "err300":"err300", "error":"err300",
   "clear":"cleardata", "cleardata":"cleardata", "qingchu":"cleardata",
@@ -1365,6 +1366,7 @@ function openFaq(id){
   el.classList.add("dl-flash");
   setTimeout(()=>el.classList.remove("dl-flash"), 2900);
   el.scrollIntoView({behavior:"smooth", block:"center"});
+  pendingFaqId = id;                         // 检测结束后再校准一次位置
   return true;
 }
 
@@ -1416,6 +1418,18 @@ function renderAdvice(){
     '<a class="ai" data-faqjump="'+x.id+'"><b>'+x.t+'</b><span>'+x.why+'</span></a>').join("");
   list.forEach(x=>{ const el=document.getElementById(x.id); if(el) el.classList.add("adv"); });
   box.style.display="";
+
+  // 检测跑完后整页会长高，深链目标会被推走 —— 这里重新校准两次
+  if(pendingFaqId){
+    const pid = pendingFaqId;
+    pendingFaqId = null;
+    [250, 1300].forEach(ms=>setTimeout(()=>{
+      const el = document.getElementById(pid);
+      if(!el) return;
+      if(el.tagName === "DETAILS") el.open = true;
+      el.scrollIntoView({behavior:"smooth", block:"center"});
+    }, ms));
+  }
 }
 
 // 页内跳转到商城（环境正常时的引流链接）
