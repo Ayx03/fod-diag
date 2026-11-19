@@ -1,7 +1,7 @@
 {
-  "versionCode": 34,
-  "versionName": "4.3",
-  "size": "44.7 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.3.apk",
-  "notes": "检测结果卡片顺序再调整：域名连通性 → DRM → 地区判定 → 出口 → 设备；结论横幅下方常驻一行机型与 DRM 等级（如「HUAWEI ELS-AN00 · Android 12 · 无 Widevine（播不了）」），截图即可判断"
+  "versionCode": 35,
+  "versionName": "4.4",
+  "size": "44.9 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.4.apk",
+  "notes": "修复：检测进行中复制按钮是灰色的、点不动，避免复制到半份结果；检测完成后才亮起。其余同 4.3（域名连通性 → DRM → 地区判定 → 出口 → 设备，结论区常驻机型与 DRM 等级）"
 }

@@ -551,7 +551,7 @@
 <button id="copySafe" style="margin-top:8px">复制结果（和谐版）</button>
 <button id="copyFull" style="margin-top:8px;border-color:#5a2b3a;color:#ff8fa3">复制完整版（仅限微信）</button>
 <div class="apkwrap">
-  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag-v4.3.apk" download>下载 Android 检测 App（约 45 KB · 仅联网权限）</a>
+  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag-v4.4.apk" download>下载 Android 检测 App（约 45 KB · 仅联网权限）</a>
   <div class="qrbox">
     <img alt="扫码下载最新版" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQgAAAEIAQAAAACLjVdSAAABnUlEQVR4nO1a0RLCMAgjvf3/L8cj0G4++STHidX1asdDjBQCE7QPY30ysL/F7/JxmSFWBGE00OLK3Xl8mI6Mc+HDGaETkrttkK46C+B4A9xRwjtytxXSSgv4ROi0sDXSL5+XPSD3iDAymg++eYg5LbePdEG6SiyMmwzn4fnat8f5B88H+uTnxaNqLY7VyD/oV9DB/b7vdUG6Sizg3x1HjJmu2XoMWjgNZg/9MViPmZ8LceALMeMeojjSDGmJBc1VGEWBhsoY32AzpDX5liek5niknGHxdAUj7h+Q7jgCJN2jE9IifQolW81ZyVFBVSGlDdJVZYFIs0ovqdQVTlKSNEJaVs8x20DQ0Tn6Q9tT44cFAapwt5vMix9Ls0KpiQzepIRC64W0In5A6muXui7GQsRHH6QR0sL6ls/SFvqcCWdo/WKblp13M4gM7q8jsm7wIzU2L37Y6X1odhae/SFO0+vXvWQ01o975FYXpKvcgqejLIWaD2A6Iv2yfzDWiLOifpAqmIH649qPGXaHjLsfor1x9Qv+/3do+busJhYvAErL3RDEOFIAAAAASUVORK5CYII=">
     <div class="qrtip">扫一扫，传到手机安装</div>
@@ -604,7 +604,7 @@
 
 <script>
 const CHROME_STORE="https://play.google.com/store/apps/details?id=com.android.chrome&hl=zh-cn";
-let APK_URL="./fod-diag-v4.3.apk";
+let APK_URL="./fod-diag-v4.4.apk";
 fetch("version.json?t="+Date.now()).then(r=>r.json()).then(v=>{
   if(v&&v.url){APK_URL=v.url;const a=document.getElementById("apk");if(a)a.href=v.url;}
 }).catch(()=>{});
@@ -1180,8 +1180,25 @@ function decide(){
   return [color, head, body];
 }
 
+function setCopyReady(ok){
+  const top=$("copyTop");
+  if(top){
+    top.disabled=!ok;
+    top.textContent = ok ? "📋 复制完整结果发给我们（比截图清楚）" : "⏳ 正在检测，完成后才能复制…";
+    top.style.opacity = ok ? "1" : ".45";
+    top.style.cursor  = ok ? "pointer" : "not-allowed";
+  }
+  ["copySafe","copyFull"].forEach(id=>{
+    const b=$(id); if(!b) return;
+    b.disabled=!ok;
+    b.style.opacity = ok ? "1" : ".45";
+    b.style.cursor  = ok ? "pointer" : "not-allowed";
+  });
+}
+
 async function run(){
   verdict("#666","正在检测…","约需 10 秒");
+  setCopyReady(false);
   // 先把所有检测项列出来，右边转圈，测完一项填一项
   $("net").innerHTML = IPAPIS.map(a=>pendRow(a.n)).join("")
       + pendRow("汇总") + pendRow("运营商") + pendRow("ASN");
@@ -1195,6 +1212,7 @@ async function run(){
   const [c,t,d]=decide();
   progStop();
   verdict(c,t,d);
+  setCopyReady(true);
 }
 
 $("again").onclick=run;
