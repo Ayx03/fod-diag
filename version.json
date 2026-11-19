@@ -1,7 +1,7 @@
 {
-  "versionCode": 35,
-  "versionName": "4.4",
-  "size": "44.9 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.4.apk",
-  "notes": "修复：检测进行中复制按钮是灰色的、点不动，避免复制到半份结果；检测完成后才亮起。其余同 4.3（域名连通性 → DRM → 地区判定 → 出口 → 设备，结论区常驻机型与 DRM 等级）"
+  "versionCode": 36,
+  "versionName": "4.5",
+  "size": "45.5 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.5.apk",
+  "notes": "新增：Android 14 及以上，客户截图后会弹窗提示「要复制结果发给我们吗」，点一下即可复制完整检测结果（不读存储、不申请任何权限；老系统无此 API 时自动跳过）"
 }
