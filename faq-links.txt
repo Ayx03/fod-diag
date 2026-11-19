@@ -1,0 +1,26 @@
+https://g.imayx.top/fod-diag/?q=regsteps    注册步骤（照着填，一步不落）
+https://g.imayx.top/fod-diag/?q=drm    ⚠️ 提示「您必须启用 DRM」/ 浏览器不支持受保护播放
+https://g.imayx.top/fod-diag/?q=update    ⚠️ 打开就弹「アップデート確認」，进不去 App
+https://g.imayx.top/fod-diag/?q=register    ⚠️ 别把「登録」当成登录（最常见）
+https://g.imayx.top/fod-diag/?q=emailused    提示「メールアドレスはすでに登録されています」（邮箱已注册）
+https://g.imayx.top/fod-diag/?q=codeinvalid    提示「有効な認証コードではありません」（验证码无效）
+https://g.imayx.top/fod-diag/?q=codecorrect    验证码是对的，却一直提示无效
+https://g.imayx.top/fod-diag/?q=qqmail    QQ / 126 邮箱收不到验证码或重置邮件
+https://g.imayx.top/fod-diag/?q=cancelmeaning    「解約手続きへ」和「再開手続きへ」有什么区别
+https://g.imayx.top/fod-diag/?q=aftercancel    「解約」之后还能用吗？是不是立刻失效
+https://g.imayx.top/fod-diag/?q=course    弹出「この作品はFODプレミアム各コースでご視聴いただけます」
+https://g.imayx.top/fod-diag/?q=err300    跳到「エラー」页 / 提示不在日本国内（err=300）
+https://g.imayx.top/fod-diag/?q=cleardata    清除数据在哪？清完要重新登录吗
+https://g.imayx.top/fod-diag/?q=clearweb    电脑版 Edge 怎么清除 FOD 网站数据（Windows / macOS 通用）
+https://g.imayx.top/fod-diag/?q=ipfail    为什么有的 IP 源失败，或者显示的是国内地址
+https://g.imayx.top/fod-diag/?q=logout    App 里怎么退出账号（换号必看）
+https://g.imayx.top/fod-diag/?q=search    搜不到「杀旅」——中文搜不到，要用日文原名
+https://g.imayx.top/fod-diag/?q=wechat    在微信里打开，检测结果是「中国」
+https://g.imayx.top/fod-diag/?q=redirect    安卓浏览器一打开就跳到 FOD App
+https://g.imayx.top/fod-diag/?q=ios    iPhone / iPad 装不上或打不开
+https://g.imayx.top/fod-diag/?q=playstore    安卓在 Google Play 下不了 / 提示所在地区不可用
+https://g.imayx.top/fod-diag/?q=huawei    华为 / 荣耀（国内版）/ 华为智选 手机看不了
+https://g.imayx.top/fod-diag/?q=gms    手机支持 GMS，但没登录 Google 账号，会影响吗
+https://g.imayx.top/fod-diag/?q=playerror    检测都正常，但 App 里播放还是报错
+https://g.imayx.top/fod-diag/?q=blackshot    截图 / 录屏出来是黑屏
+https://g.imayx.top/fod-diag/?q=quality    能播，但画质差 / 黑屏 / 卡顿
