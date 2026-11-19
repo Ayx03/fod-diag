@@ -1,7 +1,7 @@
 {
-  "versionCode": 36,
-  "versionName": "4.5",
-  "size": "45.5 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.5.apk",
-  "notes": "新增：Android 14 及以上，客户截图后会弹窗提示「要复制结果发给我们吗」，点一下即可复制完整检测结果（不读存储、不申请任何权限；老系统无此 API 时自动跳过）"
+  "versionCode": 37,
+  "versionName": "4.6",
+  "size": "45.7 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.6.apk",
+  "notes": "更新微店商品链接：带广告会员换成新上架的商品；免广告会员暂时下架，点了会提示补货中，不再跳到失效商品页"
 }
