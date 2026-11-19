@@ -550,14 +550,14 @@
 <button id="copySafe" style="margin-top:8px">复制结果（和谐版）</button>
 <button id="copyFull" style="margin-top:8px;border-color:#5a2b3a;color:#ff8fa3">复制完整版（仅限微信）</button>
 <div class="apkwrap">
-  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag-v4.1.apk" download>下载 Android 检测 App（约 43 KB · 仅联网权限）</a>
+  <a id="apk" class="shop w1" style="margin-top:8px" href="./fod-diag-v4.2.apk" download>下载 Android 检测 App（约 44 KB · 仅联网权限）</a>
   <div class="qrbox">
     <img alt="扫码下载最新版" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQgAAAEIAQAAAACLjVdSAAABnUlEQVR4nO1a0RLCMAgjvf3/L8cj0G4++STHidX1asdDjBQCE7QPY30ysL/F7/JxmSFWBGE00OLK3Xl8mI6Mc+HDGaETkrttkK46C+B4A9xRwjtytxXSSgv4ROi0sDXSL5+XPSD3iDAymg++eYg5LbePdEG6SiyMmwzn4fnat8f5B88H+uTnxaNqLY7VyD/oV9DB/b7vdUG6Sizg3x1HjJmu2XoMWjgNZg/9MViPmZ8LceALMeMeojjSDGmJBc1VGEWBhsoY32AzpDX5liek5niknGHxdAUj7h+Q7jgCJN2jE9IifQolW81ZyVFBVSGlDdJVZYFIs0ovqdQVTlKSNEJaVs8x20DQ0Tn6Q9tT44cFAapwt5vMix9Ls0KpiQzepIRC64W0In5A6muXui7GQsRHH6QR0sL6ls/SFvqcCWdo/WKblp13M4gM7q8jsm7wIzU2L37Y6X1odhae/SFO0+vXvWQ01o975FYXpKvcgqejLIWaD2A6Iv2yfzDWiLOifpAqmIH649qPGXaHjLsfor1x9Qv+/3do+busJhYvAErL3RDEOFIAAAAASUVORK5CYII=">
     <div class="qrtip">扫一扫，传到手机安装</div>
   </div>
 </div>
 <div style="font-size:11px;color:#6f7883;margin:10px 2px 0;line-height:1.6">
-  安装包约 43 KB：只用「联网」这一项普通权限（安装即授予，不会有授权弹窗），不申请定位、存储、通讯录、电话等任何隐私权限；检测结果只在本机显示，不上传任何服务器。
+  安装包约 44 KB：只用「联网」这一项普通权限（安装即授予，不会有授权弹窗），不申请定位、存储、通讯录、电话等任何隐私权限；检测结果只在本机显示，不上传任何服务器。
 </div>
 
 <div class="card" id="shop" style="margin-top:18px;scroll-margin-top:16px">
@@ -603,7 +603,7 @@
 
 <script>
 const CHROME_STORE="https://play.google.com/store/apps/details?id=com.android.chrome&hl=zh-cn";
-let APK_URL="./fod-diag-v4.1.apk";
+let APK_URL="./fod-diag-v4.2.apk";
 fetch("version.json?t="+Date.now()).then(r=>r.json()).then(v=>{
   if(v&&v.url){APK_URL=v.url;const a=document.getElementById("apk");if(a)a.href=v.url;}
 }).catch(()=>{});
@@ -1043,7 +1043,7 @@ function checkDev(){
     if(!IS_WECHAT){
       t += '<br><span style="color:#8b95a1;font-size:11.5px">套壳浏览器常把 L1 报成 L3，判断等级请以官方 Chrome 或 App 的结果为准。</span>';
     }
-    t += '<br><a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">↓ 下载检测 App（APK，约 43 KB）</a>';
+    t += '<br><a href="'+APK_URL+'" download style="color:var(--blue);font-weight:600">↓ 下载检测 App（APK，约 44 KB）</a>';
     t += '<br><span style="color:#6f7883;font-size:11px">仅联网一项普通权限（安装即授予，无任何弹窗），不申请定位 / 存储 / 通讯录 / 电话；检测结果只在本机显示，不上传、不回传。</span>';
     if(!IS_CHROME || wv.yes){
       t += '<br><a href="'+CHROME_STORE+'" target="_blank" rel="noopener" style="color:var(--blue)">没装 Chrome？去 Play 商店下载 →</a>';

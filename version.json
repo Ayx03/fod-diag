@@ -1,7 +1,7 @@
 {
-  "versionCode": 32,
-  "versionName": "4.1",
-  "size": "43.7 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.1.apk",
-  "notes": "修正判定顺序：先看 DRM 能不能播，再看能不能自己订阅。无 Google 服务的手机不再误报「订阅一定失败」，改为「可以正常观看，订阅需代开」"
+  "versionCode": 33,
+  "versionName": "4.2",
+  "size": "44.3 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.2.apk",
+  "notes": "结论改为一次列全所有问题（域名连通性 / 被 FOD 拒 403 / DRM / 地区判定 / 出口），不再只报第一个；检测结果卡片把域名连通性和 DRM 提到 IP 属地之前；修正 FAQ 里「转发验证码一定失败」的错误说法，并补充「邮箱或账号被 FOD 风控」这一原因"
 }
