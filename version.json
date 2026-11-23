@@ -1,7 +1,7 @@
 {
-  "versionCode": 37,
-  "versionName": "4.6",
-  "size": "45.7 KB",
-  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.6.apk",
-  "notes": "更新微店商品链接：带广告会员换成新上架的商品；免广告会员暂时下架，点了会提示补货中，不再跳到失效商品页"
+  "versionCode": 38,
+  "versionName": "4.7",
+  "size": "40.1 KB",
+  "url": "https://g.imayx.top/fod-diag/fod-diag-v4.7.apk",
+  "notes": "常见问题改为 App 内直接加载网页版：内容随网页实时更新，改文案不用再发新版本；新增「先用网页版试试」入口"
 }
