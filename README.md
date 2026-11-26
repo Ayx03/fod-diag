@@ -26,6 +26,11 @@
 
 自定义域名建议用 `fod.` 子域，CNAME 指向托管商给出的目标；若域名在 Cloudflare 且用 Cloudflare Pages，控制台内直接绑定即可，无需手动改 DNS。
 
+## FOD 官方 App 下载
+
+[FOD 官方 Android App v6.4.1（81 MB）](https://github.com/Ayx03/fod-diag/releases/tag/fod-official-v6.4.1)
+—— 从原版安装包提取，未修改；因文件较大放在 GitHub Releases，不在仓库内。
+
 ## 目录
 
 ```
